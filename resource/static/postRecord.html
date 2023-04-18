@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worthly Tracker: Add Record</title>
+</head>
+<link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<script src="/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script type="module" src="/js/page/postRecord.js"></script>
+<body>
+<nav class="navbar navbar-expand-sm navbar-dark bg-secondary bg-gradient navbar-dar mb-3">
+    <div class="container">
+        <a class="navbar-brand" href="/">Worthly Tracker</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="navbar-toggler-icon"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar-menu">
+            <ul class="navbar-nav ms-auto mb-2 mb-xs-0">
+                <li class="nav-item">
+                    <a href="/" class="nav-link active">Records</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a href="/report_by_date" class="dropdown-item">Report by date</a>
+                            <a href="/report_net_worth" class="dropdown-item">Report net worth</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Settings</a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a href="/asset_type_setting" class="dropdown-item">Manage asset types</a>
+                            <a href="/asset_type_sequence" class="dropdown-item">Asset type sequence</a>
+                            <a href="/asset_setting" class="dropdown-item">Manage assets</a>
+                            <a href="/asset_sequence" class="dropdown-item">Asset sequence</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="error-info" class="container">
+
+</div>
+
+<div class="container">
+    <h2 id="record-action"></h2>
+    <div class="row mt-3">
+        <div class="col-auto">
+            <h4>Record Date: </h4>
+        </div>
+        <div class="col-auto">
+            <h4 id="shown-date">Loading...</h4>
+        </div>
+        <div class="col-auto">
+            <input id="date" type="date" style="visibility: hidden; position: absolute;">
+            <button id="change-date" class="btn btn-outline-secondary btn-sm">Change</button>
+        </div>
+    </div>
+    <div class="container mt-3">
+        <table class="table table-bordered table-hover text-nowrap" id="record-table">
+            <thead class="table-secondary table-group-divider sticky-top">
+            <tr>
+                <th class="text-center fs-6" scope="col">Name</th>
+                <th class="text-center fs-6" scope="col">Place</th>
+                <th class="text-center fs-6" scope="col">AI</th>
+                <th class="text-center fs-6" scope="col">Bought Value</th>
+                <th class="text-center fs-6" scope="col">Current Value</th>
+                <th class="text-center fs-6" scope="col">UR %</th>
+                <th class="text-center fs-6" scope="col">Realized Value</th>
+                <th class="text-center fs-6" scope="col">Note</th>
+            </tr>
+            </thead>
+        </table>
+
+        <div class="text-center">
+            <p class="btn btn-success btn-lg disabled" id="save-btn">&nbsp;Save&nbsp;</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
