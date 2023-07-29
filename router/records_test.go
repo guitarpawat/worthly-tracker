@@ -17,6 +17,7 @@ import (
 	"worthly-tracker/config"
 	"worthly-tracker/db"
 	"worthly-tracker/logs"
+	db_mock "worthly-tracker/mocks/worthly-tracker/db"
 	"worthly-tracker/model"
 )
 
@@ -26,7 +27,7 @@ func TestRecordSuite(t *testing.T) {
 
 type RecordSuite struct {
 	suite.Suite
-	repo    *db.MockRecordRepo
+	repo    *db_mock.MockRecordRepo
 	service recordService
 	dbMock  sqlmock.Sqlmock
 }
@@ -38,7 +39,7 @@ func (s *RecordSuite) SetupSuite() {
 
 func (s *RecordSuite) SetupTest() {
 	s.dbMock = db.InitMock()
-	s.repo = new(db.MockRecordRepo)
+	s.repo = db_mock.NewMockRecordRepo(s.T())
 	s.service = recordService{
 		recordRepo: s.repo,
 		conn:       db.GetDB(),
