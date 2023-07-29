@@ -17,7 +17,7 @@ import (
 	"worthly-tracker/config"
 	"worthly-tracker/db"
 	"worthly-tracker/logs"
-	db_mock "worthly-tracker/mocks/worthly-tracker/db"
+	"worthly-tracker/mocks/db_mock"
 	"worthly-tracker/model"
 )
 
