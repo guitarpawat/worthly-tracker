@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
@@ -36,7 +37,7 @@ func Init() {
 }
 
 func connectDB() {
-	connDb, err := sqlx.Open("sqlite3", viper.GetString("datasource.uri"))
+	connDb, err := sqlx.Open("sqlite3", viper.GetString("datasource.uri")+"?_foreign_keys=true")
 	if err != nil {
 		logs.Log().Panicf("Unable to connect to database: %v\n", err)
 	}
@@ -65,7 +66,7 @@ func migrateDB() {
 
 	err = m.Up()
 	if err != nil {
-		if err == migrate.ErrNoChange {
+		if errors.Is(err, migrate.ErrNoChange) {
 			logs.Log().Debug("No changes in migration")
 		} else {
 			logs.Log().Panicf("Unable to migrate the database: %v\n", err)

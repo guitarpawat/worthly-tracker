@@ -59,7 +59,7 @@ func (s *RecordSuite) TestGetDate_NoRecord() {
 }
 
 func (s *RecordSuite) TestGetDate_WithRecord() {
-	mockRecords(s.tx)
+	s.mockRecords()
 	cases := []struct {
 		current  model.Date
 		prevFrom model.Date
@@ -148,7 +148,7 @@ func (s *RecordSuite) TestGetLatestDate_NoRecord() {
 }
 
 func (s *RecordSuite) TestGetLatestDate_WithRecord() {
-	s.Require().NoError(mockRecords(s.tx))
+	s.Require().NoError(s.mockRecords())
 	actual, err := s.repo.GetLatestDate(s.tx)
 	s.Require().NoError(err)
 
@@ -158,7 +158,7 @@ func (s *RecordSuite) TestGetLatestDate_WithRecord() {
 }
 
 func (s *RecordSuite) TestUpsertRecord_Insert() {
-	s.Require().NoError(mockRecords(s.tx))
+	s.Require().NoError(s.mockRecords())
 	record := model.AssetRecord{
 		Id:               nil,
 		AssetId:          pointy.Int(2),
@@ -180,7 +180,7 @@ func (s *RecordSuite) TestUpsertRecord_Insert() {
 }
 
 func (s *RecordSuite) TestUpsertRecord_Update() {
-	s.Require().NoError(mockRecords(s.tx))
+	s.Require().NoError(s.mockRecords())
 	record := model.AssetRecord{
 		Id:               pointy.Int(1),
 		AssetId:          pointy.Int(2),
@@ -202,7 +202,7 @@ func (s *RecordSuite) TestUpsertRecord_Update() {
 }
 
 func (s *RecordSuite) TestDeleteRecordById() {
-	s.Require().NoError(mockRecords(s.tx))
+	s.Require().NoError(s.mockRecords())
 	s.Require().NoError(s.repo.DeleteRecordById(5, s.tx))
 	row := s.tx.QueryRowx("SELECT * FROM records WHERE id = 5")
 
@@ -212,7 +212,7 @@ func (s *RecordSuite) TestDeleteRecordById() {
 }
 
 func (s *RecordSuite) TestDeleteRecordByDate() {
-	s.Require().NoError(mockRecords(s.tx))
+	s.Require().NoError(s.mockRecords())
 	rows, err := s.repo.DeleteRecordByDate(model.MustNewDate("2023-01-02"), s.tx)
 	s.Require().NoError(err)
 	s.Require().EqualValues(2, rows)
@@ -228,15 +228,15 @@ func (s *RecordSuite) TestDeleteRecordByDate() {
 }
 
 func (s *RecordSuite) TestGetRecordByDate_NotFound() {
-	s.Require().NoError(mockRecords(s.tx))
+	s.Require().NoError(s.mockRecords())
 	records, err := s.repo.GetRecordByDate(model.MustNewDate("2023-05-03"), s.tx)
 	s.Require().NoError(err)
 	s.Require().Equal(0, len(records))
 }
 
 func (s *RecordSuite) TestGetRecordByDate_Found() {
-	s.Require().NoError(mockRecords(s.tx))
-	s.Require().NoError(mockRecordsWithMultipleType(s.tx))
+	s.Require().NoError(s.mockRecords())
+	s.Require().NoError(s.mockRecordsWithMultipleType())
 
 	actual, err := s.repo.GetRecordByDate(model.MustNewDate("2023-01-03"), s.tx)
 	s.Require().NoError(err)
@@ -359,8 +359,8 @@ func (s *RecordSuite) TestGetRecordByDate_Found() {
 }
 
 func (s *RecordSuite) TestGetRecordDraft_EmptyRecord() {
-	s.Require().NoError(mockAssets(s.tx))
-	s.Require().NoError(mockInactiveAssets(s.tx))
+	s.Require().NoError(s.mockAssets())
+	s.Require().NoError(s.mockInactiveAssets())
 
 	actual, err := s.repo.GetRecordDraft(s.tx)
 	s.Require().NoError(err)
@@ -427,8 +427,8 @@ func (s *RecordSuite) TestGetRecordDraft_EmptyRecord() {
 }
 
 func (s *RecordSuite) TestGetRecordDraft_PartialHitRecord() {
-	s.Require().NoError(mockAssets(s.tx))
-	s.Require().NoError(mockInactiveAssets(s.tx))
+	s.Require().NoError(s.mockAssets())
+	s.Require().NoError(s.mockInactiveAssets())
 
 	actual, err := s.repo.GetRecordDraft(s.tx)
 	s.Require().NoError(err)
@@ -494,144 +494,144 @@ func (s *RecordSuite) TestGetRecordDraft_PartialHitRecord() {
 	s.Require().Equal(expect[0].Assets[1].Note, actual[0].Assets[1].Note)
 }
 
-func mockAssets(tx *sqlx.Tx) (err error) {
+func (s *RecordSuite) mockAssets() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
-	tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('Stocks', true, true, 1, true)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('a1', 'scbs', 1, 0, 1, true)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('a2', 'scbs', 1, 0, 2, true)")
+	s.tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('Stocks', true, true, 1, true)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('a1', 'scbs', 1, 0, 1, true)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('a2', 'scbs', 1, 0, 2, true)")
 
 	return
 }
 
-func mockInactiveAssets(tx *sqlx.Tx) (err error) {
+func (s *RecordSuite) mockInactiveAssets() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
 
-	tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('Bonds', true, true, 1, false)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b1', 'scbs', 2, 0, 1, true)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b2', 'scbs', 2, 0, 1, true)")
+	s.tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('Bonds', true, true, 1, false)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b1', 'scbs', 2, 0, 1, true)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b2', 'scbs', 2, 0, 1, true)")
 
-	tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('Cash', true, true, 1, true)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('c1', 'scbs', 3, 0, 1, false)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('c2', 'scbs', 3, 0, 1, false)")
+	s.tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('Cash', true, true, 1, true)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('c1', 'scbs', 3, 0, 1, false)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('c2', 'scbs', 3, 0, 1, false)")
 
 	return
 }
 
-func mockPartialRecords(tx *sqlx.Tx) (err error) {
+func (s *RecordSuite) mockPartialRecords() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
 
-	err = mockAssets(tx)
+	err = s.mockAssets()
 	if err != nil {
 		return
 	}
 
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-01', 101, 201, 301, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-01', 102, 202, 302, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-01', 101, 201, 301, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-01', 102, 202, 302, null)")
 
 	return
 }
 
-func mockRecords(tx *sqlx.Tx) (err error) {
+func (s *RecordSuite) mockRecords() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
 
-	err = mockAssets(tx)
+	err = s.mockAssets()
 	if err != nil {
 		return
 	}
 
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-01', 101, 201, 301, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-01', 102, 202, 302, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-02', 103, 203, 303, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-02', 104, 204, 304, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-03', 105, 205, 305, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-03', 106, 206, 306, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-04', 107, 207, 307, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-04', 108, 208, 308, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-05', 109, 209, 309, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-05', 110, 210, 310, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-06', 111, 211, 311, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-06', 112, 212, 312, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-07', 113, 213, 313, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-07', 114, 214, 314, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-08', 115, 215, 315, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-08', 116, 216, 316, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-09', 117, 217, 317, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-09', 118, 218, 318, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-10', 119, 219, 319, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-10', 120, 220, 320, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-11', 121, 221, 321, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-11', 122, 222, 322, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-12', 123, 223, 323, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-12', 124, 224, 324, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-13', 125, 225, 325, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-13', 126, 226, 326, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-14', 127, 227, 327, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-14', 128, 228, 328, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-15', 129, 229, 329, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-15', 130, 230, 330, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-16', 131, 231, 331, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-16', 132, 232, 332, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-17', 133, 233, 333, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-17', 134, 234, 334, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-18', 135, 235, 335, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-18', 136, 236, 336, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-19', 137, 237, 337, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-19', 138, 238, 338, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-20', 139, 239, 339, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-20', 140, 240, 340, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-21', 141, 241, 341, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-21', 142, 242, 342, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-22', 143, 243, 343, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-22', 144, 244, 344, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-23', 145, 245, 345, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-23', 146, 246, 346, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-24', 147, 247, 347, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-24', 148, 248, 348, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-25', 149, 249, 349, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-25', 150, 250, 350, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-26', 151, 251, 351, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-26', 152, 252, 352, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-27', 153, 253, 353, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-27', 154, 254, 354, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-28', 155, 255, 355, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-28', 156, 256, 356, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-29', 157, 257, 357, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-29', 158, 258, 358, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-30', 159, 259, 359, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-30', 160, 260, 360, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-31', 161, 261, 361, null)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-31', 162, 262, 362, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-01', 101, 201, 301, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-01', 102, 202, 302, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-02', 103, 203, 303, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-02', 104, 204, 304, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-03', 105, 205, 305, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-03', 106, 206, 306, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-04', 107, 207, 307, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-04', 108, 208, 308, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-05', 109, 209, 309, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-05', 110, 210, 310, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-06', 111, 211, 311, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-06', 112, 212, 312, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-07', 113, 213, 313, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-07', 114, 214, 314, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-08', 115, 215, 315, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-08', 116, 216, 316, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-09', 117, 217, 317, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-09', 118, 218, 318, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-10', 119, 219, 319, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-10', 120, 220, 320, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-11', 121, 221, 321, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-11', 122, 222, 322, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-12', 123, 223, 323, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-12', 124, 224, 324, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-13', 125, 225, 325, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-13', 126, 226, 326, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-14', 127, 227, 327, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-14', 128, 228, 328, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-15', 129, 229, 329, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-15', 130, 230, 330, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-16', 131, 231, 331, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-16', 132, 232, 332, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-17', 133, 233, 333, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-17', 134, 234, 334, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-18', 135, 235, 335, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-18', 136, 236, 336, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-19', 137, 237, 337, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-19', 138, 238, 338, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-20', 139, 239, 339, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-20', 140, 240, 340, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-21', 141, 241, 341, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-21', 142, 242, 342, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-22', 143, 243, 343, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-22', 144, 244, 344, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-23', 145, 245, 345, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-23', 146, 246, 346, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-24', 147, 247, 347, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-24', 148, 248, 348, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-25', 149, 249, 349, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-25', 150, 250, 350, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-26', 151, 251, 351, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-26', 152, 252, 352, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-27', 153, 253, 353, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-27', 154, 254, 354, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-28', 155, 255, 355, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-28', 156, 256, 356, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-29', 157, 257, 357, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-29', 158, 258, 358, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-30', 159, 259, 359, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-30', 160, 260, 360, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (1, '2023-01-31', 161, 261, 361, null)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (2, '2023-01-31', 162, 262, 362, null)")
 
 	return
 }
 
-func mockRecordsWithMultipleType(tx *sqlx.Tx) (err error) {
+func (s *RecordSuite) mockRecordsWithMultipleType() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("%v", r)
 		}
 	}()
 
-	tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('MF', false, false, 0, true)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b1', 'finno', 2, 2000, 2, true)")
-	tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b2', 'finno', 2, 0, 1, true)")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (3, '2023-01-03', 163, 263, 363, 'test2')")
-	tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (4, '2023-01-03', 164, 264, 364, 'test')")
+	s.tx.MustExec("INSERT INTO asset_types(name, is_cash, is_liability, sequence, is_active) VALUES ('MF', false, false, 0, true)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b1', 'finno', 2, 2000, 2, true)")
+	s.tx.MustExec("INSERT INTO assets(name, broker ,type_id, default_increment, sequence, is_active) VALUES ('b2', 'finno', 2, 0, 1, true)")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (3, '2023-01-03', 163, 263, 363, 'test2')")
+	s.tx.MustExec("INSERT INTO records(asset_id, date, bought_value, current_value, realized_value, note) VALUES (4, '2023-01-03', 164, 264, 364, 'test')")
 	return
 }

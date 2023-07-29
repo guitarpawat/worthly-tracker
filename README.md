@@ -43,5 +43,5 @@ server:
 `50 entries * 12 months * 80 years = 48,000 entries`, which can be handled by sqlite without needs of other database system.
 
 ## Contribution
-Since I only work on this project to suite my needs, I will only accept PR on security issues. If you want to modify the code
+Since I only work on this project to suite my needs, I will only accept PR on security issues or bugs. If you want to modify the code
 and make the better version for yourself, please feel free to fork this project.

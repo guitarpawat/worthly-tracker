@@ -38,23 +38,33 @@ type AssetTypeDetail struct {
 }
 
 type AssetDetail struct {
-	Id               *int                `json:"id,omitempty"`
-	Name             *string             `json:"name,omitempty"`
-	Broker           *string             `json:"broker,omitempty"`
-	TypeId           *int                `json:"typeId,omitempty"`
-	TypeName         *string             `json:"typeName,omitempty"`
-	Category         *string             `json:"category,omitempty"`
-	DefaultIncrement decimal.NullDecimal `json:"defaultIncrement,omitempty"`
-	Sequence         *int                `json:"sequence,omitempty"`
-	IsActive         *bool               `json:"isActive,omitempty"`
+	Id               *int             `json:"id,omitempty"`
+	Name             *string          `json:"name,omitempty"`
+	Broker           *string          `json:"broker,omitempty"`
+	TypeId           *int             `json:"typeId,omitempty" db:"type_id"`
+	TypeName         *string          `json:"typeName,omitempty" db:"type_name"`
+	Category         *string          `json:"category,omitempty"`
+	DefaultIncrement *decimal.Decimal `json:"defaultIncrement,omitempty" db:"default_increment"`
+	Sequence         *int             `json:"sequence,omitempty"`
+	IsActive         *bool            `json:"isActive,omitempty" db:"is_active"`
 }
 
 type OffsetDetail struct {
-	Id            *int                `json:"id,omitempty"`
-	AssetId       *int                `json:"assetId,omitempty"`
-	AssetName     *string             `json:"assetName,omitempty"`
-	Broker        *string             `json:"broker,omitempty"`
-	EffectiveDate *string             `json:"effectiveDate,omitempty"`
-	OffsetPrice   decimal.NullDecimal `json:"offsetPrice,omitempty"`
-	Note          *string             `json:"note,omitempty"`
+	Id            *int             `json:"id,omitempty"`
+	AssetId       *int             `json:"assetId,omitempty"`
+	AssetName     *string          `json:"assetName,omitempty"`
+	Broker        *string          `json:"broker,omitempty"`
+	EffectiveDate *string          `json:"effectiveDate,omitempty"`
+	OffsetPrice   *decimal.Decimal `json:"offsetPrice,omitempty"`
+	Note          *string          `json:"note,omitempty"`
+}
+
+type SequenceDetail struct {
+	Id       int `json:"id"`
+	Sequence int `json:"sequence"`
+}
+
+type NameDetail struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }

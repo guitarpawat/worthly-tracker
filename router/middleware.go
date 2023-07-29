@@ -11,9 +11,6 @@ func RegisterMiddleware(e *echo.Echo) {
 		LogStatus: true,
 		LogURI:    true,
 		LogError:  true,
-		BeforeNextFunc: func(c echo.Context) {
-			c.Set("customValueFromContext", 42)
-		},
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			if v.Error != nil {
 				logs.Log().Errorf("REQUEST: uri: %v, error: %v\n", v.URI, v.Error)

@@ -80,3 +80,61 @@ func (r *MockRecordRepo) DeleteRecordByDate(date model.Date, tx *sqlx.Tx) (int64
 	args := r.Called(date, tx)
 	return int64(args.Int(0)), args.Error(1)
 }
+
+type MockAssetTypeRepo struct {
+	mock.Mock
+}
+
+func (r *MockAssetTypeRepo) Get(isActive *bool, tx *sqlx.Tx) ([]model.AssetTypeDetail, error) {
+	args := r.Called(isActive, tx)
+	return args.Get(0).([]model.AssetTypeDetail), args.Error(1)
+}
+
+func (r *MockAssetTypeRepo) GetNames(isActive *bool, tx *sqlx.Tx) ([]model.NameDetail, error) {
+	args := r.Called(isActive, tx)
+	return args.Get(0).([]model.NameDetail), args.Error(1)
+}
+
+func (r *MockAssetTypeRepo) Upsert(assetType model.AssetTypeDetail, tx *sqlx.Tx) error {
+	args := r.Called(assetType, tx)
+	return args.Error(0)
+}
+
+func (r *MockAssetTypeRepo) Delete(id int, tx *sqlx.Tx) error {
+	args := r.Called(id, tx)
+	return args.Error(0)
+}
+
+func (r *MockAssetTypeRepo) UpdateSequence(sequences model.SequenceDetail, tx *sqlx.Tx) error {
+	args := r.Called(sequences, tx)
+	return args.Error(0)
+}
+
+type MockAssetRepo struct {
+	mock.Mock
+}
+
+func (r *MockAssetRepo) Get(isActive *bool, typeId *int, tx *sqlx.Tx) ([]model.AssetDetail, error) {
+	args := r.Called(isActive, typeId, tx)
+	return args.Get(0).([]model.AssetDetail), args.Error(1)
+}
+
+func (r *MockAssetRepo) GetNames(isActive *bool, typeId *int, tx *sqlx.Tx) ([]model.NameDetail, error) {
+	args := r.Called(isActive, typeId, tx)
+	return args.Get(0).([]model.NameDetail), args.Error(1)
+}
+
+func (r *MockAssetRepo) Upsert(asset model.AssetDetail, tx *sqlx.Tx) error {
+	args := r.Called(asset, tx)
+	return args.Error(0)
+}
+
+func (r *MockAssetRepo) Delete(id int, tx *sqlx.Tx) error {
+	args := r.Called(id, tx)
+	return args.Error(0)
+}
+
+func (r *MockAssetRepo) UpdateSequence(sequence model.SequenceDetail, tx *sqlx.Tx) error {
+	args := r.Called(sequence, tx)
+	return args.Error(0)
+}
