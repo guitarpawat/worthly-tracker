@@ -114,22 +114,6 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
         inputBoughtValue.value = formatter.formatDecimal(asset.boughtValue)
     }
 
-    if(isCash) {
-        inputBoughtValue.value = null
-    } else {
-        if(!asset.defaultIncrement) {
-            asset.defaultIncrement = 0
-            inputBoughtValue.disabled = false
-        }
-        if(!asset.boughtValue) {
-            asset.boughtValue = 0
-            inputBoughtValue.disabled = false
-        }
-
-        asset.boughtValue = asset.boughtValue + asset.defaultIncrement
-        inputBoughtValue.value = formatter.formatDecimal(asset.boughtValue)
-    }
-
     tdBoughtValue.appendChild(inputBoughtValue)
 
     let tdCurrentValue = document.createElement('td')
