@@ -15,7 +15,7 @@ let changeDate = function() {
 let getDraft = async function() {
     let resp = await fetcher.getRecordDraft()
     if(resp.status === 200) {
-        renderDraft(resp.body)
+        renderDraft(resp.body, true)
         document.getElementById('date').value = formatter.formatDateAsBackend(Date.now())
         changeDate()
     } else {
@@ -30,7 +30,7 @@ let getRecord = async function() {
     }
     let resp = await fetcher.getRecordsByDate(date)
     if(resp.status === 200) {
-        renderDraft(resp.body.types)
+        renderDraft(resp.body.types, false)
         document.getElementById('date').value = resp.body.date.current
         changeDate()
     } else {
@@ -38,16 +38,16 @@ let getRecord = async function() {
     }
 }
 
-let renderDraft = function (resp) {
+let renderDraft = function (resp, autoIncrement) {
     drafts = fromRecordResponse(resp)
 
     let table = document.getElementById('record-table')
     for(let i = 0; i < drafts.length; i++) {
-        renderTypes(drafts[i], table)
+        renderTypes(drafts[i], table, autoIncrement)
     }
 }
 
-let renderTypes = function (type, table) {
+let renderTypes = function (type, table, autoIncrement) {
     let tbody = document.createElement('tbody')
     table.appendChild(tbody)
 
@@ -62,11 +62,11 @@ let renderTypes = function (type, table) {
     tr.appendChild(th)
 
     for(let i = 0; i < type.assets.length; i++) {
-        renderAssets(type.assets[i], type.isCash, tbody)
+        renderAssets(type.assets[i], type.isCash, tbody, autoIncrement)
     }
 }
 
-let renderAssets = function (asset, isCash, tbody) {
+let renderAssets = function (asset, isCash, tbody, autoIncrement) {
     if(window.location.pathname.startsWith('/add')) {
         asset.id = null
     }
@@ -99,15 +99,19 @@ let renderAssets = function (asset, isCash, tbody) {
     inputBoughtValue.setAttribute('step', '0.01')
     inputBoughtValue.setAttribute('class', 'fs-6 text-end')
     inputBoughtValue.disabled = true
+
     if(isCash) {
         inputBoughtValue.value = null
-    } else if(asset.defaultIncrement && asset.boughtValue) {
-        inputBoughtValue.value = formatter.formatDecimal(asset.boughtValue+ asset.defaultIncrement)
-    } else if(asset.boughtValue) {
-        inputBoughtValue.value = formatter.formatDecimal(asset.boughtValue)
     } else {
-        inputBoughtValue.value = formatter.formatDecimal(0)
-        inputBoughtValue.disabled = false
+        if(!asset.defaultIncrement || !autoIncrement) {
+            asset.defaultIncrement = 0
+        }
+        if(!asset.boughtValue) {
+            asset.boughtValue = 0
+        }
+
+        asset.boughtValue = asset.boughtValue + asset.defaultIncrement
+        inputBoughtValue.value = formatter.formatDecimal(asset.boughtValue)
     }
 
     tdBoughtValue.appendChild(inputBoughtValue)
