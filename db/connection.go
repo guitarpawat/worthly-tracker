@@ -32,8 +32,8 @@ func (p *SqlConn) BeginTx() (*sqlx.Tx, error) {
 }
 
 func Init() {
-	connectDB()
 	migrateDB()
+	connectDB()
 }
 
 func connectDB() {
@@ -49,12 +49,18 @@ func connectDB() {
 }
 
 func migrateDB() {
+	connMigrate, err := sqlx.Open("sqlite3", viper.GetString("datasource.uri")+"?_foreign_keys=false")
+	if err != nil {
+		logs.Log().Panicf("Unable to connect to database: %v\n", err)
+	}
+	defer connMigrate.Close()
+
 	migrationFs, err := iofs.New(resource.Loader(), "migration")
 	if err != nil {
 		logs.Log().Panicf("Unable to create iofs for db/migration: %v\n", err)
 	}
 
-	driver, err := sqlite.WithInstance(db.GetDB().DB, &sqlite.Config{})
+	driver, err := sqlite.WithInstance(connMigrate.DB, &sqlite.Config{})
 	if err != nil {
 		logs.Log().Panicf("Unable to create driver instance: %v\n", err)
 	}
