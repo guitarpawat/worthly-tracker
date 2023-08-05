@@ -1,5 +1,5 @@
 import * as formatter from '../common/formatter.js'
-import {ApiFetcher} from "../common/fetcher.js";
+import {ApiFetcher} from '../common/fetcher.js'
 import {renderErrorInfo} from '../common/error.js'
 import {fromRecordResponse} from '../model/record.js'
 
@@ -201,6 +201,7 @@ let postRecord = async function () {
     }
     let resp = await fetcher.postRecord(records, document.getElementById('date').value)
     if(resp.status === 200) {
+        window.onbeforeunload = null
         window.location.href = '/?date=' + document.getElementById('date').value
     } else {
         renderErrorInfo(resp)
@@ -229,3 +230,9 @@ window.onload = async function () {
         document.getElementById('record-action').innerText = 'Something must be wrong with me'
     }
 }
+
+let onExit = function (e) {
+    return "Are you sure to exit?"
+}
+
+window.onbeforeunload = onExit
