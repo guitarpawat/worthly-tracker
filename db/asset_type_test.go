@@ -5,8 +5,8 @@ package db
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/openlyinc/pointy"
 	"github.com/stretchr/testify/suite"
+	"go.openly.dev/pointy"
 	"testing"
 	"worthly-tracker/config"
 	"worthly-tracker/logs"

@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
-	"github.com/openlyinc/pointy"
 	"github.com/shopspring/decimal"
+	"go.openly.dev/pointy"
 	"worthly-tracker/model"
 )
 
