@@ -9,15 +9,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/viper"
 	"worthly-tracker/logs"
+	"worthly-tracker/ports"
 	"worthly-tracker/resource"
 )
 
-var db Connection
-
-type Connection interface {
-	GetDB() *sqlx.DB
-	BeginTx() (*sqlx.Tx, error)
-}
+var db ports.Connection
 
 type SqlConn struct {
 	conn *sqlx.DB
@@ -82,6 +78,6 @@ func migrateDB() {
 	logs.Log().Info("Database migration run successfully")
 }
 
-func GetDB() Connection {
+func GetDB() ports.Connection {
 	return db
 }

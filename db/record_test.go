@@ -14,6 +14,7 @@ import (
 	"worthly-tracker/config"
 	"worthly-tracker/logs"
 	"worthly-tracker/model"
+	"worthly-tracker/ports"
 )
 
 func TestRecordSuite(t *testing.T) {
@@ -23,7 +24,7 @@ func TestRecordSuite(t *testing.T) {
 type RecordSuite struct {
 	suite.Suite
 	tx   *sqlx.Tx
-	repo RecordRepo
+	repo ports.RecordRepo
 }
 
 func (s *RecordSuite) SetupSuite() {

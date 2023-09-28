@@ -1,8 +1,8 @@
 boilerplate-file: ".mock.go.tmpl"
-dir: "mocks/{{.PackageName}}_mock"
-outpkg: "{{.PackageName}}_mock"
+dir: "mocks"
+outpkg: "mocks"
 filename: "mock_{{.InterfaceNameSnake}}.go"
 packages:
-  worthly-tracker/db:
+  worthly-tracker/ports:
     config:
       all: true

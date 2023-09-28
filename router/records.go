@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"worthly-tracker/db"
 	"worthly-tracker/model"
+	"worthly-tracker/ports"
 )
 
 func recordsRouter(api *echo.Group) {
@@ -17,8 +18,8 @@ func recordsRouter(api *echo.Group) {
 }
 
 type recordService struct {
-	recordRepo db.RecordRepo
-	conn       db.Connection
+	recordRepo ports.RecordRepo
+	conn       ports.Connection
 }
 
 type getRecordByDateResponse struct {

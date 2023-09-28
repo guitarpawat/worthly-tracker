@@ -10,18 +10,8 @@ import (
 
 var recordRepo = &SqliteRecordRepo{}
 
-func GetRecordRepo() RecordRepo {
+func GetRecordRepo() *SqliteRecordRepo {
 	return recordRepo
-}
-
-type RecordRepo interface {
-	GetDate(current model.Date, tx *sqlx.Tx) (*model.DateList, error)
-	GetLatestDate(tx *sqlx.Tx) (*model.Date, error)
-	GetRecordByDate(date model.Date, tx *sqlx.Tx) ([]model.AssetTypeRecord, error)
-	GetRecordDraft(tx *sqlx.Tx) ([]model.AssetTypeRecord, error)
-	UpsertRecord(record model.AssetRecord, date model.Date, tx *sqlx.Tx) error
-	DeleteRecordById(id int, tx *sqlx.Tx) error
-	DeleteRecordByDate(date model.Date, tx *sqlx.Tx) (int64, error)
 }
 
 type SqliteRecordRepo struct {

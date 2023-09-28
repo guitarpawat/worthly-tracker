@@ -11,16 +11,8 @@ import (
 
 var boughtValueOffsetRepo = &SqliteOffsetRepo{}
 
-func GetBoughtValueOffsetRepo() BoughtValueOffsetRepo {
+func GetBoughtValueOffsetRepo() *SqliteOffsetRepo {
 	return boughtValueOffsetRepo
-}
-
-type BoughtValueOffsetRepo interface {
-	Get(date model.Date, assetId int, tx *sqlx.Tx) (model.OffsetDetail, error)
-	GetAllByAssetId(assetId int, tx *sqlx.Tx) ([]model.OffsetDetail, error)
-	GetAllByDate(date model.Date, tx *sqlx.Tx) ([]model.OffsetDetail, error)
-	Upsert(data model.OffsetDetail, tx *sqlx.Tx) error
-	Delete(id int, tx *sqlx.Tx) error
 }
 
 type SqliteOffsetRepo struct {

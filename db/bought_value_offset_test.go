@@ -8,6 +8,7 @@ import (
 	"testing"
 	"worthly-tracker/config"
 	"worthly-tracker/logs"
+	"worthly-tracker/ports"
 )
 
 func TestBoughtValueOffsetTestSuite(t *testing.T) {
@@ -17,7 +18,7 @@ func TestBoughtValueOffsetTestSuite(t *testing.T) {
 type BoughtValueOffsetTestSuite struct {
 	suite.Suite
 	tx   *sqlx.Tx
-	repo AssetTypeRepo
+	repo ports.AssetTypeRepo
 }
 
 func (s *BoughtValueOffsetTestSuite) SetupSuite() {

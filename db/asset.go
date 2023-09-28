@@ -7,16 +7,8 @@ import (
 
 var assetRepo = &SqliteAssetRepo{}
 
-func GetAssetRepo() AssetRepo {
+func GetAssetRepo() *SqliteAssetRepo {
 	return assetRepo
-}
-
-type AssetRepo interface {
-	Get(isActive *bool, typeId *int, tx *sqlx.Tx) ([]model.AssetDetail, error)
-	GetNames(isActive *bool, typeId *int, tx *sqlx.Tx) ([]model.NameDetail, error)
-	Upsert(asset model.AssetDetail, tx *sqlx.Tx) error
-	Delete(id int, tx *sqlx.Tx) error
-	UpdateSequence(sequence model.SequenceDetail, tx *sqlx.Tx) error
 }
 
 type SqliteAssetRepo struct {
