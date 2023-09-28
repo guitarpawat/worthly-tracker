@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"worthly-tracker/model"
 )
@@ -26,7 +27,7 @@ type SqliteAssetTypeRepo struct {
 func (s *SqliteAssetTypeRepo) Get(isActive *bool, tx *sqlx.Tx) ([]model.AssetTypeDetail, error) {
 	rows, err := tx.Queryx("SELECT * FROM asset_types WHERE (is_active = ? OR ? IS NULL) ORDER BY sequence", isActive, isActive)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 
@@ -51,7 +52,7 @@ func (s *SqliteAssetTypeRepo) Get(isActive *bool, tx *sqlx.Tx) ([]model.AssetTyp
 func (s *SqliteAssetTypeRepo) GetNames(isActive *bool, tx *sqlx.Tx) ([]model.NameDetail, error) {
 	rows, err := tx.Queryx("SELECT id, name FROM asset_types WHERE (is_active = ? OR ? IS NULL) ORDER BY name", isActive, isActive)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 

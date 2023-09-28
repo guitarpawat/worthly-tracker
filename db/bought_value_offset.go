@@ -1,7 +1,11 @@
 package db
 
 import (
+	"database/sql"
+	"errors"
 	"github.com/jmoiron/sqlx"
+	"github.com/openlyinc/pointy"
+	"github.com/shopspring/decimal"
 	"worthly-tracker/model"
 )
 
@@ -12,19 +16,100 @@ func GetBoughtValueOffsetRepo() BoughtValueOffsetRepo {
 }
 
 type BoughtValueOffsetRepo interface {
-	Get(date *model.Date, assetIds []int, tx *sqlx.Tx) ([]model.OffsetDetail, error)
-	Upsert(data []model.OffsetDetail, tx *sqlx.Tx) error
+	Get(date model.Date, assetId int, tx *sqlx.Tx) (model.OffsetDetail, error)
+	GetAllByAssetId(assetId int, tx *sqlx.Tx) ([]model.OffsetDetail, error)
+	GetAllByDate(date model.Date, tx *sqlx.Tx) ([]model.OffsetDetail, error)
+	Upsert(data model.OffsetDetail, tx *sqlx.Tx) error
+	Delete(id int, tx *sqlx.Tx) error
 }
 
 type SqliteOffsetRepo struct {
 }
 
-func (s *SqliteOffsetRepo) Get(date *model.Date, assetIds []int, tx *sqlx.Tx) ([]model.OffsetDetail, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *SqliteOffsetRepo) Get(date model.Date, assetId int, tx *sqlx.Tx) (model.OffsetDetail, error) {
+	rows, err := tx.Queryx("SELECT id, asset_id, effective_date, offset_price, note FROM bought_value_offsets WHERE asset_id = ? AND effective_date <= ? ORDER BY effective_date DESC LIMIT 1")
+	if errors.Is(err, sql.ErrNoRows) {
+		return model.OffsetDetail{
+			Id:            pointy.Int(0),
+			AssetId:       assetId,
+			EffectiveDate: date,
+			OffsetPrice:   decimal.Zero,
+			Note:          nil,
+		}, nil
+	}
+
+	if err != nil {
+		return model.OffsetDetail{}, err
+	}
+
+	offset := new(model.OffsetDetail)
+	err = rows.Scan(&offset.Id, &offset.AssetId, &offset.EffectiveDate, &offset.OffsetPrice, &offset.Note)
+	if err != nil {
+		return model.OffsetDetail{}, err
+	}
+
+	return *offset, nil
 }
 
-func (s *SqliteOffsetRepo) Upsert(data []model.OffsetDetail, tx *sqlx.Tx) error {
-	//TODO implement me
-	panic("implement me")
+func (s *SqliteOffsetRepo) GetAllByAssetId(assetId int, tx *sqlx.Tx) ([]model.OffsetDetail, error) {
+	rows, err := tx.Queryx("SELECT id, asset_id, effective_date, offset_price, note FROM bought_value_offsets WHERE asset_id = ?", assetId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	var offsets []model.OffsetDetail
+	for rows.Next() {
+		offset := model.OffsetDetail{}
+		err := rows.Scan(&offset.Id, &offset.AssetId, &offset.EffectiveDate, &offset.OffsetPrice, &offset.Note)
+		if err != nil {
+			return nil, err
+		}
+		offsets = append(offsets, offset)
+	}
+
+	return offsets, nil
+}
+
+func (s *SqliteOffsetRepo) GetAllByDate(date model.Date, tx *sqlx.Tx) ([]model.OffsetDetail, error) {
+	rows, err := tx.Queryx(`SELECT id, asset_id, MAX(effective_date), offset_price, note FROM bought_value_offsets WHERE effective_date <= ? GROUP BY asset_id`, date)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	var offsets []model.OffsetDetail
+	for rows.Next() {
+		offset := model.OffsetDetail{}
+		err := rows.Scan(&offset.Id, &offset.AssetId, &offset.EffectiveDate, &offset.OffsetPrice, &offset.Note)
+		if err != nil {
+			return nil, err
+		}
+		offsets = append(offsets, offset)
+	}
+
+	return offsets, nil
+}
+
+func (s *SqliteOffsetRepo) Upsert(data model.OffsetDetail, tx *sqlx.Tx) (err error) {
+	if data.Id == nil {
+		_, err = tx.Exec("INSERT INTO bought_value_offsets(asset_id, effective_date, offset_price, note) VALUES (?,?,?,?)",
+			data.AssetId, data.EffectiveDate, data.OffsetPrice, data.Note)
+	} else {
+		_, err = tx.Exec("UPDATE bought_value_offsets SET asset_id = ?, effective_date = ?, offset_price = ?, note = ? WHERE id = ?",
+			data.AssetId, data.EffectiveDate, data.OffsetPrice, data.Note, data.Id)
+	}
+
+	return
+}
+
+func (s *SqliteOffsetRepo) Delete(id int, tx *sqlx.Tx) (err error) {
+	_, err = tx.Exec("DELETE FROM bought_value_offsets WHERE id = ?", id)
+	return
 }

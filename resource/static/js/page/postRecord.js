@@ -169,7 +169,7 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
             asset.currentValue = Number(inputCurrentValue.value)
         }
     } else {
-        tdBoughtValue.onclick = function () {inputBoughtValue.disabled = false}
+        inputBoughtValue.onclick = function () {inputBoughtValue.disabled = false}
         inputBoughtValue.onchange = function () {
             inputBoughtValue.value = formatter.formatDecimal(inputBoughtValue.value)
             asset.boughtValue = Number(inputBoughtValue.value)
@@ -180,7 +180,7 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
             asset.currentValue = Number(inputCurrentValue.value)
             calUrPercent(tdUrPercent, inputBoughtValue, inputCurrentValue)
         }
-        tdRealizedValue.onclick = function () {inputRealizedValue.disabled = false}
+        inputRealizedValue.onclick = function () {inputRealizedValue.disabled = false}
         inputRealizedValue.onchange = function () {
             inputRealizedValue.value = formatter.formatDecimal(inputRealizedValue.value)
             asset.realizedValue = Number(inputRealizedValue.value)

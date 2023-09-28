@@ -50,13 +50,11 @@ type AssetDetail struct {
 }
 
 type OffsetDetail struct {
-	Id            *int             `json:"id,omitempty"`
-	AssetId       *int             `json:"assetId,omitempty"`
-	AssetName     *string          `json:"assetName,omitempty"`
-	Broker        *string          `json:"broker,omitempty"`
-	EffectiveDate *string          `json:"effectiveDate,omitempty"`
-	OffsetPrice   *decimal.Decimal `json:"offsetPrice,omitempty"`
-	Note          *string          `json:"note,omitempty"`
+	Id            *int            `json:"id,omitempty"`
+	AssetId       int             `json:"assetId,omitempty"`
+	EffectiveDate Date            `json:"effectiveDate,omitempty"`
+	OffsetPrice   decimal.Decimal `json:"offsetPrice,omitempty"`
+	Note          *string         `json:"note,omitempty"`
 }
 
 type SequenceDetail struct {

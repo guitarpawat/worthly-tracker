@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/jmoiron/sqlx"
 	"github.com/shopspring/decimal"
 	"worthly-tracker/model"
@@ -69,7 +70,7 @@ func (r *SqliteRecordRepo) GetLatestDate(tx *sqlx.Tx) (*model.Date, error) {
 
 	var date *model.Date
 	err := row.Scan(&date)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	if err != nil {
