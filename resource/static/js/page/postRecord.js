@@ -159,7 +159,10 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
     inputNote.setAttribute('class', 'fs-6 text-start')
     inputNote.value = asset.note
     inputNote.disabled = true
-    tdNote.onclick = function () {inputNote.disabled = false}
+    tdNote.onclick = function () {
+        inputNote.disabled = false
+        inputNote.focus()
+    }
     inputNote.onchange = function () {asset.note = inputNote.value}
     tdNote.appendChild(inputNote)
 
@@ -169,7 +172,10 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
             asset.currentValue = Number(inputCurrentValue.value)
         }
     } else {
-        inputBoughtValue.onclick = function () {inputBoughtValue.disabled = false}
+        tdBoughtValue.onclick = function () {
+            inputBoughtValue.disabled = false
+            inputBoughtValue.focus()
+        }
         inputBoughtValue.onchange = function () {
             inputBoughtValue.value = formatter.formatDecimal(inputBoughtValue.value)
             asset.boughtValue = Number(inputBoughtValue.value)
@@ -180,7 +186,10 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
             asset.currentValue = Number(inputCurrentValue.value)
             calUrPercent(tdUrPercent, inputBoughtValue, inputCurrentValue)
         }
-        inputRealizedValue.onclick = function () {inputRealizedValue.disabled = false}
+        tdRealizedValue.onclick = function () {
+            inputRealizedValue.disabled = false
+            inputRealizedValue.focus()
+        }
         inputRealizedValue.onchange = function () {
             inputRealizedValue.value = formatter.formatDecimal(inputRealizedValue.value)
             asset.realizedValue = Number(inputRealizedValue.value)

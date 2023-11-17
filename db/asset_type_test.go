@@ -86,9 +86,9 @@ func (s *AssetTypeSuite) TestGetNames_IsActive() {
 	s.Require().NoError(err)
 	s.Require().Equal(2, len(res))
 	s.Require().Equal("Bonds", res[0].Name)
-	s.Require().Equal(1, res[0].Name)
+	s.Require().Equal(1, res[0].Id)
 	s.Require().Equal("Cash", res[1].Name)
-	s.Require().Equal(2, res[1].Name)
+	s.Require().Equal(2, res[1].Id)
 }
 
 func (s *AssetTypeSuite) TestGetNames_All() {
