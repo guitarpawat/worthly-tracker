@@ -27,9 +27,10 @@ func TestRecordSuite(t *testing.T) {
 
 type RecordSuite struct {
 	suite.Suite
-	repo    *mocks.MockRecordRepo
-	service recordService
-	dbMock  sqlmock.Sqlmock
+	recordRepo *mocks.MockRecordRepo
+	offsetRepo *mocks.MockBoughtValueOffsetRepo
+	service    recordService
+	dbMock     sqlmock.Sqlmock
 }
 
 func (s *RecordSuite) SetupSuite() {
@@ -39,9 +40,11 @@ func (s *RecordSuite) SetupSuite() {
 
 func (s *RecordSuite) SetupTest() {
 	s.dbMock = db.InitMock()
-	s.repo = mocks.NewMockRecordRepo(s.T())
+	s.recordRepo = mocks.NewMockRecordRepo(s.T())
+	s.offsetRepo = mocks.NewMockBoughtValueOffsetRepo(s.T())
 	s.service = recordService{
-		recordRepo: s.repo,
+		recordRepo: s.recordRepo,
+		offsetRepo: s.offsetRepo,
 		conn:       db.GetDB(),
 	}
 }
@@ -58,9 +61,9 @@ func (s *RecordSuite) TestGetRecordByDate_400_InvalidDateFormat() {
 	s.Require().ErrorContains(err, "date is invalid format (YYYY-MM-DD):")
 	s.Require().Equal(http.StatusBadRequest, err.(*echo.HTTPError).Code)
 
-	s.True(s.repo.AssertExpectations(s.T()))
-	s.Require().True(s.repo.AssertNotCalled(s.T(), "GetLatestDate"))
-	s.Require().True(s.repo.AssertNotCalled(s.T(), "GetRecordByDate"))
+	s.True(s.recordRepo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "GetLatestDate"))
+	s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "GetRecordByDate"))
 }
 
 func (s *RecordSuite) TestGetRecordByDate_404_DateNotFound() {
@@ -74,14 +77,14 @@ func (s *RecordSuite) TestGetRecordByDate_404_DateNotFound() {
 	s.dbMock.ExpectBegin()
 	s.dbMock.ExpectRollback()
 
-	s.repo.On("GetDate", model.MustNewDate("2023-01-31"), mock.Anything).Return(
+	s.recordRepo.On("GetDate", model.MustNewDate("2023-01-31"), mock.Anything).Return(
 		&model.DateList{
 			Current: pointy.Pointer(model.MustNewDate("2023-01-31")),
 			Prev:    nil,
 			Next:    nil,
 		}, nil)
 
-	s.repo.On("GetRecordByDate", model.MustNewDate("2023-01-31"), mock.Anything).Return(
+	s.recordRepo.On("GetRecordByDate", model.MustNewDate("2023-01-31"), mock.Anything).Return(
 		make([]model.AssetTypeRecord, 0), nil)
 
 	err := s.service.getRecordByDate(c)
@@ -89,9 +92,9 @@ func (s *RecordSuite) TestGetRecordByDate_404_DateNotFound() {
 	s.Require().Equal(http.StatusNotFound, err.(*echo.HTTPError).Code)
 
 	s.Require().NoError(s.dbMock.ExpectationsWereMet())
-	s.Require().True(s.repo.AssertExpectations(s.T()))
-	s.Require().True(s.repo.AssertNotCalled(s.T(), "GetLatestDate"))
-	s.Require().True(s.repo.AssertNotCalled(s.T(), "GetRecordByDate"))
+	s.Require().True(s.recordRepo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "GetLatestDate"))
+	s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "GetRecordByDate"))
 }
 
 func (s *RecordSuite) TestGetRecordByDate_404_NoRecordsInSystem() {
@@ -103,15 +106,15 @@ func (s *RecordSuite) TestGetRecordByDate_404_NoRecordsInSystem() {
 	s.dbMock.ExpectBegin()
 	s.dbMock.ExpectRollback()
 
-	s.repo.On("GetLatestDate", mock.Anything).Return(nil, nil)
+	s.recordRepo.On("GetLatestDate", mock.Anything).Return(nil, nil)
 
 	err := s.service.getRecordByDate(c)
 	s.Require().ErrorContains(err, "no any record in the system")
 	s.Require().Equal(http.StatusNotFound, err.(*echo.HTTPError).Code)
 
 	s.NoError(s.dbMock.ExpectationsWereMet())
-	s.True(s.repo.AssertExpectations(s.T()))
-	s.Require().True(s.repo.AssertNotCalled(s.T(), "GetRecordByDate"))
+	s.True(s.recordRepo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "GetRecordByDate"))
 }
 
 func (s *RecordSuite) TestGetRecordByDate_200_SuccessWithDate() {
@@ -124,13 +127,13 @@ func (s *RecordSuite) TestGetRecordByDate_200_SuccessWithDate() {
 	s.dbMock.ExpectCommit()
 
 	date := model.MustNewDate("2023-01-31")
-	s.repo.On("GetLatestDate", mock.Anything).Return(pointy.Pointer(date), nil)
+	s.recordRepo.On("GetLatestDate", mock.Anything).Return(pointy.Pointer(date), nil)
 
 	dateList := mockDateList()
-	s.repo.On("GetDate", date, mock.Anything).Return(pointy.Pointer(dateList), nil)
+	s.recordRepo.On("GetDate", date, mock.Anything).Return(pointy.Pointer(dateList), nil)
 
 	records := mockRecord()
-	s.repo.On("GetRecordByDate", date, mock.Anything).Return([]model.AssetTypeRecord{records}, nil)
+	s.recordRepo.On("GetRecordByDate", date, mock.Anything).Return([]model.AssetTypeRecord{records}, nil)
 
 	err := s.service.getRecordByDate(c)
 	s.Require().NoError(err)
@@ -146,7 +149,7 @@ func (s *RecordSuite) TestGetRecordByDate_200_SuccessWithDate() {
 	)
 	s.Require().NoError(err)
 	s.Require().Equal(strings.TrimSpace(string(expResp)), strings.TrimSpace(w.Body.String()))
-	s.Require().True(s.repo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertExpectations(s.T()))
 	s.Require().NoError(s.dbMock.ExpectationsWereMet())
 }
 
@@ -163,10 +166,10 @@ func (s *RecordSuite) TestGetRecordByDate_200_SuccessWithoutDate() {
 
 	date := model.MustNewDate("2023-01-31")
 	dateList := mockDateList()
-	s.repo.On("GetDate", date, mock.Anything).Return(pointy.Pointer(dateList), nil)
+	s.recordRepo.On("GetDate", date, mock.Anything).Return(pointy.Pointer(dateList), nil)
 
 	records := mockRecord()
-	s.repo.On("GetRecordByDate", date, mock.Anything).Return([]model.AssetTypeRecord{records}, nil)
+	s.recordRepo.On("GetRecordByDate", date, mock.Anything).Return([]model.AssetTypeRecord{records}, nil)
 
 	err := s.service.getRecordByDate(c)
 	s.Require().NoError(err)
@@ -182,7 +185,7 @@ func (s *RecordSuite) TestGetRecordByDate_200_SuccessWithoutDate() {
 	)
 	s.Require().NoError(err)
 	s.Require().Equal(strings.TrimSpace(string(expResp)), strings.TrimSpace(w.Body.String()))
-	s.Require().True(s.repo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertExpectations(s.T()))
 	s.Require().NoError(s.dbMock.ExpectationsWereMet())
 }
 
@@ -196,7 +199,7 @@ func (s *RecordSuite) TestGetRecordDraft_200_Success() {
 	s.dbMock.ExpectCommit()
 
 	record := mockRecord()
-	s.repo.On("GetRecordDraft", mock.Anything).Return([]model.AssetTypeRecord{record}, nil)
+	s.recordRepo.On("GetRecordDraft", mock.Anything).Return([]model.AssetTypeRecord{record}, nil)
 
 	err := s.service.getRecordDraft(c)
 	s.Require().NoError(err)
@@ -205,7 +208,7 @@ func (s *RecordSuite) TestGetRecordDraft_200_Success() {
 	expResp, err := json.Marshal([]model.AssetTypeRecord{record})
 	s.Require().NoError(err)
 	s.Require().Equal(strings.TrimSpace(string(expResp)), strings.TrimSpace(w.Body.String()))
-	s.Require().True(s.repo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertExpectations(s.T()))
 	s.Require().NoError(s.dbMock.ExpectationsWereMet())
 }
 
@@ -226,8 +229,8 @@ func (s *RecordSuite) TestPostRecord_400_NoRecord() {
 
 			err := s.service.postRecord(c)
 			s.Require().ErrorContains(err, "nothing to upsert")
-			s.Require().True(s.repo.AssertExpectations(s.T()))
-			s.Require().True(s.repo.AssertNotCalled(s.T(), "UpsertRecord"))
+			s.Require().True(s.recordRepo.AssertExpectations(s.T()))
+			s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "UpsertRecord"))
 			s.Require().NoError(s.dbMock.ExpectationsWereMet())
 		})
 	}
@@ -245,8 +248,8 @@ func (s *RecordSuite) TestPostRecord_400_NoDate() {
 
 	err := s.service.postRecord(c)
 	s.Require().ErrorContains(err, "missing date")
-	s.Require().True(s.repo.AssertExpectations(s.T()))
-	s.Require().True(s.repo.AssertNotCalled(s.T(), "UpsertRecord"))
+	s.Require().True(s.recordRepo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertNotCalled(s.T(), "UpsertRecord"))
 	s.Require().NoError(s.dbMock.ExpectationsWereMet())
 }
 
@@ -261,13 +264,13 @@ func (s *RecordSuite) TestPostRecord_200_Success() {
 	s.dbMock.ExpectBegin()
 	s.dbMock.ExpectCommit()
 
-	s.repo.On("UpsertRecord", mock.MatchedBy(func(a model.AssetRecord) bool {
+	s.recordRepo.On("UpsertRecord", mock.MatchedBy(func(a model.AssetRecord) bool {
 		return *a.Id == 1 && a.BoughtValue.Equal(decimal.NewFromInt(500))
 	}), model.MustNewDate("2022-01-31"), mock.Anything).Return(nil)
 
 	err := s.service.postRecord(c)
 	s.Require().NoError(err)
-	s.Require().True(s.repo.AssertExpectations(s.T()))
+	s.Require().True(s.recordRepo.AssertExpectations(s.T()))
 	s.Require().NoError(s.dbMock.ExpectationsWereMet())
 }
 
@@ -301,4 +304,110 @@ func mockRecord() model.AssetTypeRecord {
 			},
 		},
 	}
+}
+
+func (s *RecordSuite) TestGetOffsetByDate_400_InvalidDateFormat() {
+	date := []string{
+		"31-01-2023",
+		"abc",
+		"AAAA-AA-AA",
+		"1234",
+	}
+
+	for _, d := range date {
+		s.Run(d, func() {
+			r := httptest.NewRequest(http.MethodGet, "/", nil)
+			w := httptest.NewRecorder()
+			c := echo.New().NewContext(r, w)
+			c.SetPath("/offset/:date")
+			c.SetParamNames("date")
+			c.SetParamValues(d)
+
+			err := s.service.getOffsetByDate(c)
+			s.Require().ErrorContains(err, "date is invalid format (YYYY-MM-DD):")
+			s.Require().Equal(http.StatusBadRequest, err.(*echo.HTTPError).Code)
+
+			s.True(s.offsetRepo.AssertExpectations(s.T()))
+			s.Require().True(s.offsetRepo.AssertNotCalled(s.T(), "GetAllByDate"))
+		})
+	}
+}
+
+func (s *RecordSuite) TestGetOffsetByDate_400_NoDateParam() {
+	r := httptest.NewRequest(http.MethodGet, "/", nil)
+	w := httptest.NewRecorder()
+	c := echo.New().NewContext(r, w)
+	c.SetPath("/offset/:date")
+
+	err := s.service.getOffsetByDate(c)
+	s.Require().ErrorContains(err, "no date specified")
+	s.Require().Equal(http.StatusBadRequest, err.(*echo.HTTPError).Code)
+
+	s.True(s.offsetRepo.AssertExpectations(s.T()))
+	s.Require().True(s.offsetRepo.AssertNotCalled(s.T(), "GetAllByDate"))
+}
+
+func (s *RecordSuite) TestGetOffsetByDate_200_EmptyRecord() {
+	r := httptest.NewRequest(http.MethodGet, "/", nil)
+	w := httptest.NewRecorder()
+	c := echo.New().NewContext(r, w)
+	date := model.MustNewDate("2023-01-31")
+	c.SetPath("/offset/:date")
+	c.SetParamNames("date")
+	c.SetParamValues(date.String())
+
+	s.dbMock.ExpectBegin()
+	s.dbMock.ExpectCommit()
+
+	s.offsetRepo.EXPECT().GetAllByDate(date, mock.Anything).Return([]model.OffsetDetail{}, nil)
+
+	err := s.service.getOffsetByDate(c)
+	s.Require().NoError(err)
+	s.Require().True(s.offsetRepo.AssertExpectations(s.T()))
+	s.Require().NoError(s.dbMock.ExpectationsWereMet())
+
+	s.Require().Equal(http.StatusOK, w.Code)
+	bodyParsed := make([]model.OffsetDetail, 0)
+	err = json.Unmarshal(w.Body.Bytes(), &bodyParsed)
+	s.Require().NoError(err)
+	s.Require().Empty(bodyParsed)
+}
+
+func (s *RecordSuite) TestGetOffsetByDate_200_WithResponse() {
+	r := httptest.NewRequest(http.MethodGet, "/", nil)
+	w := httptest.NewRecorder()
+	c := echo.New().NewContext(r, w)
+	date := model.MustNewDate("2023-01-31")
+	c.SetPath("/offset/:date")
+	c.SetParamNames("date")
+	c.SetParamValues(date.String())
+
+	s.dbMock.ExpectBegin()
+	s.dbMock.ExpectCommit()
+
+	s.offsetRepo.EXPECT().GetAllByDate(date, mock.Anything).Return([]model.OffsetDetail{
+		{
+			Id:            pointy.Int(1),
+			AssetId:       2,
+			EffectiveDate: date,
+			OffsetPrice:   decimal.NewFromInt(3),
+			Note:          pointy.String("4"),
+		},
+	}, nil)
+
+	err := s.service.getOffsetByDate(c)
+	s.Require().NoError(err)
+	s.Require().True(s.offsetRepo.AssertExpectations(s.T()))
+	s.Require().NoError(s.dbMock.ExpectationsWereMet())
+
+	s.Require().Equal(http.StatusOK, w.Code)
+	bodyParsed := make([]model.OffsetDetail, 0)
+	err = json.Unmarshal(w.Body.Bytes(), &bodyParsed)
+	s.Require().NoError(err)
+	s.Require().Equal(1, len(bodyParsed))
+	s.Require().Equal(1, *bodyParsed[0].Id)
+	s.Require().Equal(2, bodyParsed[0].AssetId)
+	s.Require().Equal(date, bodyParsed[0].EffectiveDate)
+	s.Require().Equal(decimal.NewFromInt(3), bodyParsed[0].OffsetPrice)
+	s.Require().Equal("4", *bodyParsed[0].Note)
 }
