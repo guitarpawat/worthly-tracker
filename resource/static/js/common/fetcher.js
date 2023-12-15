@@ -3,6 +3,7 @@ class ApiConfig {
     getRecord = "/records/:date"
     getRecordDraft = "/records/draft"
     postRecord = "/records/"
+    getRecordOffset = "/records/offset/:date"
 }
 
 export class ApiFetcher {
@@ -40,6 +41,15 @@ export class ApiFetcher {
         }
 
         let url = this.config.root + this.config.getRecord.replace(":date", date)
+        return this.#get(url)
+    }
+
+    async getBoughtValueOffsetByDate(date) {
+        if (!date) {
+            date = ""
+        }
+
+        let url = this.config.root + this.config.getRecordOffset.replace(":date", date)
         return this.#get(url)
     }
 

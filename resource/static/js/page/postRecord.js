@@ -122,11 +122,10 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
     inputCurrentValue.setAttribute('type', 'number')
     inputCurrentValue.setAttribute('step', '0.01')
     inputCurrentValue.setAttribute('class', 'fs-6 text-end')
-    if(asset.currentValue) {
-        inputCurrentValue.value = formatter.formatDecimal(asset.currentValue)
-    } else {
-        inputCurrentValue.value = formatter.formatDecimal(0)
+    if(!asset.currentValue) {
+        asset.currentValue = "0"
     }
+    inputCurrentValue.value = formatter.formatDecimal(asset.currentValue)
     tdCurrentValue.appendChild(inputCurrentValue)
 
     let tdUrPercent = document.createElement('td')
@@ -147,6 +146,7 @@ let renderAssets = function (asset, isCash, tbody, autoIncrement) {
     } else if(asset.realizedValue) {
         inputRealizedValue.value = formatter.formatDecimal(asset.realizedValue)
     } else {
+        asset.realizedValue = "0"
         inputRealizedValue.value = formatter.formatDecimal(0)
     }
     inputRealizedValue.disabled = true

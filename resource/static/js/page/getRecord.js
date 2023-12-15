@@ -2,6 +2,7 @@ import {ApiFetcher} from '../common/fetcher.js'
 import {renderErrorInfo} from '../common/error.js'
 import {fromRecordResponse, RecordsSummary} from '../model/record.js'
 import * as formatter from '../common/formatter.js'
+import {BigNumber} from '../bignumber.mjs'
 
 let fetcher = new ApiFetcher()
 let param = new URLSearchParams(window.location.search)
@@ -253,14 +254,29 @@ let createDateOption = function (dateSelector, date, isSelected = false) {
 }
 
 let loadRecord = async function (date) {
-    let resp = await fetcher.getRecordsByDate(date)
+    let record = await fetcher.getRecordsByDate(date)
+    let offset = await fetcher.getBoughtValueOffsetByDate(record.body.date.current)
+    processOffset(record, offset)
 
-    if(resp.status === 200) {
-        renderResponse(resp)
-        renderDate(resp)
+    if(record.status === 200) {
+        renderResponse(record)
+        renderDate(record)
         enableBtn()
     } else {
-        renderErrorInfo(resp)
+        renderErrorInfo(record)
+    }
+}
+
+let processOffset = function (record, offset) {
+    if(offset && offset.body) {
+        record.body.types.forEach(assetType => {
+            assetType.assets.forEach(asset => {
+                let assetOffset = offset.body.find(o => o.assetId === asset.assetId)
+                if (assetOffset) {
+                    asset.boughtValue = new BigNumber(asset.boughtValue).plus(new BigNumber(assetOffset.offsetPrice)).toString()
+                }
+            })
+        })
     }
 }
 
