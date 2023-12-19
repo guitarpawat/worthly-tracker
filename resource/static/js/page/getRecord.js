@@ -292,32 +292,38 @@ let editBtnTarget = function () {
     document.getElementById('edit-btn').href = '/edit' + window.location.search
 }
 
-let changeRecord = async function(date) {
+let changeRecord = async function(date, shouldPushState) {
     clearData()
     disableBtn()
     await loadRecord(date)
     if(date) {
         param.set('date', date)
-        window.history.pushState(date, '', '?' + param.toString())
-    } else {
+        if(shouldPushState) {
+            window.history.pushState(date, '', '?' + param.toString())
+        }
+    } else if(shouldPushState) {
         window.history.pushState(date, '', '/')
     }
     editBtnTarget()
 }
 
+window.onpopstate = async function (event) {
+    await changeRecord(event.state, false)
+}
+
 window.onload = getRecordOnLoad
-document.getElementById('date-selector').onchange = async function () {await changeRecord(document.getElementById('date-selector').value)}
+document.getElementById('date-selector').onchange = async function () {await changeRecord(document.getElementById('date-selector').value, true)}
 document.getElementById('prev-btn').onclick = async function () {
     let date = document.getElementById('prev-btn').value
     if(!date) return
-    await changeRecord(date)
+    await changeRecord(date, true)
 }
 document.getElementById('next-btn').onclick = async function () {
     let date = document.getElementById('next-btn').value
     if(!date) return
-    await changeRecord(date)
+    await changeRecord(date, true)
 }
 
 document.getElementById('latest-btn').onclick = async function () {
-    await changeRecord(null)
+    await changeRecord(null, true)
 }
