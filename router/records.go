@@ -78,6 +78,14 @@ func (r recordService) getRecordByDate(c echo.Context) error {
 	})
 }
 
+//	@Summary		Get record draft for making a new record date
+//	@Description	Filter only @DB: asset_types.isActive = true and @DB: assets.isActive = true as @DTO: AssetRecord
+//	@Description	Then prefill  @DTO: AssetRecord with the data from the latest @DB: records, null if there is no data of the asset found.
+//	@Tags			record
+//	@Produce		json
+//	@Success		200	{object}	model.AssetTypeRecord	"Get draft successfully"
+//	@Failure		500	{object}	nil						"Generic server error"
+//	@Router			/api/records/draft [get]
 func (r recordService) getRecordDraft(c echo.Context) error {
 	tx, err := r.conn.BeginTx()
 	if err != nil {
@@ -124,10 +132,24 @@ func (r recordService) getOffsetByDate(c echo.Context) error {
 }
 
 type postRecordRequest struct {
+	// Assets contains information about records to be added or edited
+	// Ignore fields: name, isCash, isLiability, assets[].name, assets[].broker, assets[].category, assets[].defaultIncrement
+	// Use assets[].id (update) or assets[].assetId (insert) for reference
+	// Update fields: assets[].assetId, assets[].boughtValue, assets[].currentValue, assets[].realizedValue, assets[].note
 	Assets []model.AssetRecord `json:"assets"`
-	Date   *model.Date         `json:"date"`
+	// Date to be added or edited
+	Date *model.Date `json:"date" format:"date"`
 }
 
+//	@Summary	Add or edit record at specified date
+//	@Tags		record
+//	@Accept		json
+//	@Param		request	body	postRecordRequest	true	"See field descriptions for more details"
+//	@Produce	json
+//	@Success	200	{object}	nil	"Success to create/edit records"
+//	@Failure	400	{object}	nil	"Input validation failed"
+//	@Failure	500	{object}	nil	"Generic server error"
+//	@Router		/api/records/ [post]
 func (r recordService) postRecord(c echo.Context) error {
 	var body postRecordRequest
 	err := c.Bind(&body)

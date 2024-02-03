@@ -1,3 +1,5 @@
+//go:generate mockery
+//go:generate swag init
 package main
 
 import (
@@ -16,6 +18,11 @@ func init() {
 	db.Init()
 }
 
+//	@title			Worthly Tracker
+//	@host			localhost:8080
+//	@schemes		http
+//	@contact.name	Pawat Nakpiphatkul
+//	@contact.url	https://github.com/guitarpawat/worthly-tracker/issues
 func main() {
 	e := echo.New()
 	router.RegisterMiddleware(e)

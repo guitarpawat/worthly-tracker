@@ -1,0 +1,116 @@
+definitions:
+  model.AssetRecord:
+    properties:
+      assetId:
+        example: 1
+        type: integer
+      boughtValue:
+        example: "100.00"
+        type: string
+      broker:
+        example: SCBAM
+        type: string
+      currentValue:
+        example: "101.50"
+        type: string
+      defaultIncrement:
+        example: "0.00"
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: BTP
+        type: string
+      note:
+        example: Something worth mention
+        type: string
+      realizedValue:
+        example: "0.00"
+        type: string
+    type: object
+  model.AssetTypeRecord:
+    properties:
+      assets:
+        items:
+          $ref: '#/definitions/model.AssetRecord'
+        type: array
+      id:
+        example: 1
+        type: integer
+      isCash:
+        example: false
+        type: boolean
+      isLiability:
+        example: false
+        type: boolean
+      name:
+        example: Mutual Funds
+        type: string
+    type: object
+  router.postRecordRequest:
+    properties:
+      assets:
+        description: |-
+          Assets contains information about records to be added or edited
+          Ignore fields: name, isCash, isLiability, assets[].name, assets[].broker, assets[].category, assets[].defaultIncrement
+          Use assets[].id (update) or assets[].assetId (insert) for reference
+          Update fields: assets[].assetId, assets[].boughtValue, assets[].currentValue, assets[].realizedValue, assets[].note
+        items:
+          $ref: '#/definitions/model.AssetRecord'
+        type: array
+      date:
+        description: Date to be added or edited
+        format: date
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Pawat Nakpiphatkul
+    url: https://github.com/guitarpawat/worthly-tracker/issues
+  title: Worthly Tracker
+paths:
+  /api/records/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: See field descriptions for more details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/router.postRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to create/edit records
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Add or edit record at specified date
+      tags:
+      - record
+  /api/records/draft:
+    get:
+      description: |-
+        Filter only @DB: asset_types.isActive = true and @DB: assets.isActive = true as @DTO: AssetRecord
+        Then prefill  @DTO: AssetRecord with the data from the latest @DB: records, null if there is no data of the asset found.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get draft successfully
+          schema:
+            $ref: '#/definitions/model.AssetTypeRecord'
+        "500":
+          description: Generic server error
+      summary: Get record draft for making a new record date
+      tags:
+      - record
+schemes:
+- http
+swagger: "2.0"
