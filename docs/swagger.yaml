@@ -1,0 +1,239 @@
+definitions:
+  model.AssetRecord:
+    properties:
+      assetId:
+        example: 1
+        type: integer
+      boughtValue:
+        example: "100.00"
+        type: string
+      broker:
+        example: SCBAM
+        type: string
+      currentValue:
+        example: "101.50"
+        type: string
+      defaultIncrement:
+        example: "0.00"
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: BTP
+        type: string
+      note:
+        example: Something worth mention
+        type: string
+      realizedValue:
+        example: "0.00"
+        type: string
+    type: object
+  model.AssetTypeRecord:
+    properties:
+      assets:
+        items:
+          $ref: '#/definitions/model.AssetRecord'
+        type: array
+      id:
+        example: 1
+        type: integer
+      isCash:
+        example: false
+        type: boolean
+      isLiability:
+        example: false
+        type: boolean
+      name:
+        example: Mutual Funds
+        type: string
+    type: object
+  model.DateList:
+    properties:
+      current:
+        description: Selected date
+        format: date
+        type: string
+      next:
+        description: Next 12 days from selected date
+        items:
+          format: date
+          type: string
+        type: array
+      prev:
+        description: Prev 12 days from selected date
+        items:
+          format: date
+          type: string
+        type: array
+    type: object
+  model.OffsetDetail:
+    properties:
+      assetId:
+        example: 1
+        type: integer
+      effectiveDate:
+        format: date
+        type: string
+      id:
+        example: 1
+        type: integer
+      note:
+        example: Something worth mention
+        type: string
+      offsetPrice:
+        example: "-500.00"
+        type: string
+    type: object
+  router.getRecordByDateResponse:
+    properties:
+      date:
+        allOf:
+        - $ref: '#/definitions/model.DateList'
+        description: Date provides requested date, and 12 record date to and from
+          requested date
+      types:
+        description: Types contains asset records group by asset types
+        items:
+          $ref: '#/definitions/model.AssetTypeRecord'
+        type: array
+    type: object
+  router.postRecordRequest:
+    properties:
+      assets:
+        description: |-
+          Assets contains information about records to be added or edited
+          Ignore fields: name, isCash, isLiability, assets[].name, assets[].broker, assets[].category, assets[].defaultIncrement
+          Use assets[].id (update) or assets[].assetId (insert) for reference
+          Update fields: assets[].assetId, assets[].boughtValue, assets[].currentValue, assets[].realizedValue, assets[].note
+        items:
+          $ref: '#/definitions/model.AssetRecord'
+        type: array
+      date:
+        description: Date to be added or edited
+        format: date
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: Pawat Nakpiphatkul
+    url: https://github.com/guitarpawat/worthly-tracker/issues
+  title: Worthly Tracker
+  version: "0.1"
+paths:
+  /api/records/:
+    get:
+      description: Get records by specified date or latest available if no date supplied
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to retrieve records
+          schema:
+            $ref: '#/definitions/router.getRecordByDateResponse'
+        "400":
+          description: Input validation failed
+        "404":
+          description: No any records found
+        "500":
+          description: Generic server error
+      summary: Get records by date
+      tags:
+      - record
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Records to be added or modified
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/router.postRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to create/edit records
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Add or edit record of specified date
+      tags:
+      - record
+  /api/records/{date}:
+    get:
+      description: Get records by specified date or latest available if no date supplied
+      parameters:
+      - default: ""
+        description: Specified date for query in YYYY-MM-DD format
+        format: date
+        in: path
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to retrieve records
+          schema:
+            $ref: '#/definitions/router.getRecordByDateResponse'
+        "400":
+          description: Input validation failed
+        "404":
+          description: No any records found
+        "500":
+          description: Generic server error
+      summary: Get records by date
+      tags:
+      - record
+  /api/records/draft:
+    get:
+      description: |-
+        Get new draft by filter only active assets and assetTypes.
+        Then prefill the data from the latest records, null if there is no data from the latest record
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get draft successfully
+          schema:
+            $ref: '#/definitions/model.AssetTypeRecord'
+        "500":
+          description: Generic server error
+      summary: Get record draft for making a new record date
+      tags:
+      - record
+  /api/records/offset/{date}:
+    get:
+      description: |-
+        Get asset offset prices for every asset in the record.
+        For every asset, get only the latest record before or on the specified date
+      parameters:
+      - description: Specified date for query in YYYY-MM-DD format
+        format: date
+        in: path
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to retrieve records
+          schema:
+            items:
+              $ref: '#/definitions/model.OffsetDetail'
+            type: array
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Get offset price for specified date
+      tags:
+      - record
+schemes:
+- http
+swagger: "2.0"
