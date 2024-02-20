@@ -4,14 +4,23 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"io/fs"
+	"os"
 	"worthly-tracker/logs"
 	"worthly-tracker/resource"
 )
 
 func InitTest() {
+	var file fs.File
+	var err error
 	viper.SetConfigType("yaml")
-	logs.Log().Debug("Using default test config")
-	file, err := resource.Loader().Open("test.yaml")
+	if os.Getenv("CI") == "true" {
+		logs.Log().Debug("Using default CI config")
+		file, err = resource.Loader().Open("ci_test.yaml")
+	} else {
+		logs.Log().Debug("Using default test config")
+		file, err = resource.Loader().Open("test.yaml")
+	}
 	if err != nil {
 		logs.Log().Panicf("Cannot read config file: %v", err)
 	}

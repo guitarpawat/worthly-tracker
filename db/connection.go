@@ -27,13 +27,22 @@ func (p *SqlConn) BeginTx() (*sqlx.Tx, error) {
 	return p.conn.Beginx()
 }
 
+var cacheStr = ""
+
+const datasourceUriKey = "datasource.uri"
+
 func Init() {
+	if viper.GetBool("datasource.cache") {
+		cacheStr = "&mode=memory&cache=shared"
+		conn, _ := sqlx.Open("sqlite3", viper.GetString(datasourceUriKey)+"?_foreign_keys=true"+cacheStr)
+		_ = conn.Ping()
+	}
 	migrateDB()
 	connectDB()
 }
 
 func connectDB() {
-	connDb, err := sqlx.Open("sqlite3", viper.GetString("datasource.uri")+"?_foreign_keys=true")
+	connDb, err := sqlx.Open("sqlite3", viper.GetString(datasourceUriKey)+"?_foreign_keys=true"+cacheStr)
 	if err != nil {
 		logs.Log().Panicf("Unable to connect to database: %v\n", err)
 	}
@@ -45,7 +54,7 @@ func connectDB() {
 }
 
 func migrateDB() {
-	connMigrate, err := sqlx.Open("sqlite3", viper.GetString("datasource.uri")+"?_foreign_keys=false")
+	connMigrate, err := sqlx.Open("sqlite3", viper.GetString(datasourceUriKey)+"?_foreign_keys=false"+cacheStr)
 	if err != nil {
 		logs.Log().Panicf("Unable to connect to database: %v\n", err)
 	}

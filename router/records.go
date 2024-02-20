@@ -59,7 +59,7 @@ func (r recordService) getRecordByDate(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
-	defer tx.Rollback()
+	defer tx.Commit()
 
 	if date == nil {
 		if date, err = r.recordRepo.GetLatestDate(tx); err != nil {
@@ -102,7 +102,7 @@ func (r recordService) getRecordDraft(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
-	defer tx.Rollback()
+	defer tx.Commit()
 
 	res, err := r.recordRepo.GetRecordDraft(tx)
 	if err != nil {
@@ -138,7 +138,7 @@ func (r recordService) getOffsetByDate(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
-	defer tx.Rollback()
+	defer tx.Commit()
 
 	res, err := r.offsetRepo.GetAllByDate(date, tx)
 	if err != nil {
