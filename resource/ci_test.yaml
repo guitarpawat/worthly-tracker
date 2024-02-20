@@ -1,5 +1,6 @@
 datasource:
-  uri: 'file::memory:'
+  uri: file:ci_test
+  cache: true
 server:
   host:
   port: 8080

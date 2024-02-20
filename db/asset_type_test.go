@@ -15,7 +15,7 @@ import (
 )
 
 func TestAssetTypeSuite(t *testing.T) {
-	suite.Run(t, new(AssetSuite))
+	suite.Run(t, new(AssetTypeSuite))
 }
 
 type AssetTypeSuite struct {
@@ -45,7 +45,7 @@ func (s *AssetTypeSuite) TearDownTest() {
 func (s *AssetTypeSuite) TestGet_Empty() {
 	res, err := s.repo.Get(nil, s.tx)
 	s.Require().NoError(err)
-	s.Require().Nil(res)
+	s.Require().Empty(res)
 }
 
 func (s *AssetTypeSuite) TestGet_IsActive() {
@@ -64,11 +64,11 @@ func (s *AssetTypeSuite) TestGet_All() {
 	res, err := s.repo.Get(nil, s.tx)
 	s.Require().NoError(err)
 	s.Require().Equal(4, len(res))
-	s.Require().Equal("Stocks", *res[0].Name)
-	s.Require().Equal(true, *res[0].IsActive)
-	s.Require().Equal("Bonds", *res[1].Name)
-	s.Require().Equal(false, *res[1].IsActive)
-	s.Require().Equal("Cash", *res[2].Name)
+	s.Require().Equal("Cash", *res[0].Name)
+	s.Require().Equal(false, *res[0].IsActive)
+	s.Require().Equal("Stocks", *res[1].Name)
+	s.Require().Equal(true, *res[1].IsActive)
+	s.Require().Equal("Bonds", *res[2].Name)
 	s.Require().Equal(false, *res[2].IsActive)
 	s.Require().Equal("Mutual Funds", *res[3].Name)
 	s.Require().Equal(true, *res[3].IsActive)
@@ -77,7 +77,7 @@ func (s *AssetTypeSuite) TestGet_All() {
 func (s *AssetTypeSuite) TestGetNames_Empty() {
 	res, err := s.repo.GetNames(nil, s.tx)
 	s.Require().NoError(err)
-	s.Require().Nil(res)
+	s.Require().Empty(res)
 }
 
 func (s *AssetTypeSuite) TestGetNames_IsActive() {
@@ -86,24 +86,24 @@ func (s *AssetTypeSuite) TestGetNames_IsActive() {
 	s.Require().NoError(err)
 	s.Require().Equal(2, len(res))
 	s.Require().Equal("Bonds", res[0].Name)
-	s.Require().Equal(1, res[0].Id)
+	s.Require().Equal(2, res[0].Id)
 	s.Require().Equal("Cash", res[1].Name)
-	s.Require().Equal(2, res[1].Id)
+	s.Require().Equal(3, res[1].Id)
 }
 
 func (s *AssetTypeSuite) TestGetNames_All() {
 	s.Require().NoError(s.mockAssetType())
-	res, err := s.repo.GetNames(pointy.Bool(false), s.tx)
+	res, err := s.repo.GetNames(nil, s.tx)
 	s.Require().NoError(err)
 	s.Require().Equal(4, len(res))
-	s.Require().Equal("Stocks", res[0].Name)
-	s.Require().Equal(0, res[0].Id)
-	s.Require().Equal("Bonds", res[1].Name)
-	s.Require().Equal(1, res[1].Id)
-	s.Require().Equal("Cash", res[2].Name)
-	s.Require().Equal(2, res[2].Id)
-	s.Require().Equal("Mutual Funds", res[3].Name)
-	s.Require().Equal(3, res[3].Id)
+	s.Require().Equal("Bonds", res[0].Name)
+	s.Require().Equal(2, res[0].Id)
+	s.Require().Equal("Cash", res[1].Name)
+	s.Require().Equal(3, res[1].Id)
+	s.Require().Equal("Mutual Funds", res[2].Name)
+	s.Require().Equal(4, res[2].Id)
+	s.Require().Equal("Stocks", res[3].Name)
+	s.Require().Equal(1, res[3].Id)
 }
 
 func (s *AssetTypeSuite) TestUpsert_Insert() {
@@ -123,12 +123,12 @@ func (s *AssetTypeSuite) TestUpsert_Insert() {
 	res, err := s.repo.Get(pointy.Bool(true), s.tx)
 	s.Require().NoError(err)
 	s.Require().Equal(3, len(res))
-	s.Require().Equal("Test", *res[2].Name)
-	s.Require().Equal(5, *res[2].Id)
-	s.Require().Equal(true, *res[2].IsActive)
-	s.Require().Equal(false, *res[2].IsCash)
-	s.Require().Equal(false, *res[2].IsLiability)
-	s.Require().Equal(0, *res[2].Sequence)
+	s.Require().Equal("Test", *res[0].Name)
+	s.Require().Equal(5, *res[0].Id)
+	s.Require().Equal(true, *res[0].IsActive)
+	s.Require().Equal(false, *res[0].IsCash)
+	s.Require().Equal(false, *res[0].IsLiability)
+	s.Require().Equal(0, *res[0].Sequence)
 
 	res, err = s.repo.Get(nil, s.tx)
 	s.Require().NoError(err)
@@ -152,12 +152,12 @@ func (s *AssetTypeSuite) TestUpsert_Update() {
 	res, err := s.repo.Get(pointy.Bool(true), s.tx)
 	s.Require().NoError(err)
 	s.Require().Equal(3, len(res))
-	s.Require().Equal("Test", *res[2].Name)
-	s.Require().Equal(2, *res[2].Id)
-	s.Require().Equal(true, *res[2].IsActive)
-	s.Require().Equal(false, *res[2].IsCash)
-	s.Require().Equal(false, *res[2].IsLiability)
-	s.Require().Equal(0, *res[2].Sequence)
+	s.Require().Equal("Test", *res[0].Name)
+	s.Require().Equal(2, *res[0].Id)
+	s.Require().Equal(true, *res[0].IsActive)
+	s.Require().Equal(false, *res[0].IsCash)
+	s.Require().Equal(false, *res[0].IsLiability)
+	s.Require().Equal(0, *res[0].Sequence)
 
 	res, err = s.repo.Get(nil, s.tx)
 	s.Require().NoError(err)
@@ -183,8 +183,8 @@ func (s *AssetTypeSuite) TestUpdateSequence() {
 	res, err := s.repo.Get(nil, s.tx)
 	s.Require().NoError(err)
 	s.Require().Equal(4, len(res))
-	s.Require().Equal(1, *res[0].Id)
-	s.Require().Equal(99, *res[0].Sequence)
+	s.Require().Equal(1, *res[3].Id)
+	s.Require().Equal(99, *res[3].Sequence)
 }
 
 func (s *AssetTypeSuite) mockAssetType() (err error) {

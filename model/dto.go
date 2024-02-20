@@ -31,10 +31,10 @@ type DateList struct {
 type AssetTypeDetail struct {
 	Id          *int    `json:"id,omitempty" example:"1"`
 	Name        *string `json:"name,omitempty" example:"Mutual Funds"`
-	IsCash      *bool   `json:"isCash,omitempty" example:"false"`
-	IsLiability *bool   `json:"isLiability,omitempty" example:"false"`
+	IsCash      *bool   `json:"isCash,omitempty" example:"false" db:"is_cash"`
+	IsLiability *bool   `json:"isLiability,omitempty" example:"false" db:"is_liability"`
 	Sequence    *int    `json:"sequence,omitempty" example:"1"`
-	IsActive    *bool   `json:"isActive,omitempty" example:"true"`
+	IsActive    *bool   `json:"isActive,omitempty" example:"true" db:"is_active"`
 }
 
 type AssetDetail struct {

@@ -69,8 +69,8 @@ func (s *SqliteAssetTypeRepo) Upsert(assetType model.AssetTypeDetail, tx *sqlx.T
 		_, err = tx.Exec("INSERT INTO asset_types (name, is_cash, is_liability, sequence, is_active) VALUES (?, ?, ?, ?, ?)",
 			assetType.Name, assetType.IsCash, assetType.IsLiability, 0, assetType.IsActive)
 	} else {
-		_, err = tx.Exec("UPDATE asset_types SET name = ?, is_cash = ?, is_liability = ?, is_active = ? WHERE id = ?",
-			assetType.Name, assetType.IsCash, assetType.IsLiability, assetType.IsActive, assetType.Id)
+		_, err = tx.Exec("UPDATE asset_types SET name = ?, is_cash = ?, is_liability = ?, is_active = ?, sequence = ? WHERE id = ?",
+			assetType.Name, assetType.IsCash, assetType.IsLiability, assetType.IsActive, assetType.Sequence, assetType.Id)
 	}
 
 	return
