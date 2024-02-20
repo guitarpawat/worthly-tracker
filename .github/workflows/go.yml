@@ -17,11 +17,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: crazy-max/ghaction-xgo@v3
+    - name: Setup Go
+      uses: actions/setup-go@v4
       with:
         go-version: '1.22'
-        targets: windows/amd64,linux/amd64
 
     - name: Test
       run: go test -v ./... -tags test
