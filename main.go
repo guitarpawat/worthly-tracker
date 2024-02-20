@@ -1,4 +1,5 @@
 //go:generate mockery
+//go:generate swag fmt
 //go:generate swag init
 package main
 
@@ -19,6 +20,7 @@ func init() {
 }
 
 //	@title			Worthly Tracker
+//	@version		0.1
 //	@host			localhost:8080
 //	@schemes		http
 //	@contact.name	Pawat Nakpiphatkul

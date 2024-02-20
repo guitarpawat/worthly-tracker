@@ -19,6 +19,33 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/records/": {
+            "get": {
+                "description": "Get records by specified date or latest available if no date supplied",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "record"
+                ],
+                "summary": "Get records by date",
+                "responses": {
+                    "200": {
+                        "description": "Success to retrieve records",
+                        "schema": {
+                            "$ref": "#/definitions/router.getRecordByDateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "404": {
+                        "description": "No any records found"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -29,10 +56,10 @@ const docTemplate = `{
                 "tags": [
                     "record"
                 ],
-                "summary": "Add or edit record at specified date",
+                "summary": "Add or edit record of specified date",
                 "parameters": [
                     {
-                        "description": "See field descriptions for more details",
+                        "description": "Records to be added or modified",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -56,7 +83,7 @@ const docTemplate = `{
         },
         "/api/records/draft": {
             "get": {
-                "description": "Filter only @DB: asset_types.isActive = true and @DB: assets.isActive = true as @DTO: AssetRecord\nThen prefill  @DTO: AssetRecord with the data from the latest @DB: records, null if there is no data of the asset found.",
+                "description": "Get new draft by filter only active assets and assetTypes.\nThen prefill the data from the latest records, null if there is no data from the latest record",
                 "produces": [
                     "application/json"
                 ],
@@ -70,6 +97,84 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.AssetTypeRecord"
                         }
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/records/offset/{date}": {
+            "get": {
+                "description": "Get asset offset prices for every asset in the record.\nFor every asset, get only the latest record before or on the specified date",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "record"
+                ],
+                "summary": "Get offset price for specified date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Specified date for query in YYYY-MM-DD format",
+                        "name": "date",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to retrieve records",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.OffsetDetail"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/records/{date}": {
+            "get": {
+                "description": "Get records by specified date or latest available if no date supplied",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "record"
+                ],
+                "summary": "Get records by date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "default": "",
+                        "description": "Specified date for query in YYYY-MM-DD format",
+                        "name": "date",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to retrieve records",
+                        "schema": {
+                            "$ref": "#/definitions/router.getRecordByDateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "404": {
+                        "description": "No any records found"
                     },
                     "500": {
                         "description": "Generic server error"
@@ -147,6 +252,77 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DateList": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "Selected date",
+                    "type": "string",
+                    "format": "date"
+                },
+                "next": {
+                    "description": "Next 12 days from selected date",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                },
+                "prev": {
+                    "description": "Prev 12 days from selected date",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                }
+            }
+        },
+        "model.OffsetDetail": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "effectiveDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "note": {
+                    "type": "string",
+                    "example": "Something worth mention"
+                },
+                "offsetPrice": {
+                    "type": "string",
+                    "example": "-500.00"
+                }
+            }
+        },
+        "router.getRecordByDateResponse": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "description": "Date provides requested date, and 12 record date to and from requested date",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.DateList"
+                        }
+                    ]
+                },
+                "types": {
+                    "description": "Types contains asset records group by asset types",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AssetTypeRecord"
+                    }
+                }
+            }
+        },
         "router.postRecordRequest": {
             "type": "object",
             "properties": {
@@ -169,7 +345,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "0.1",
 	Host:             "localhost:8080",
 	BasePath:         "",
 	Schemes:          []string{"http"},

@@ -25,10 +25,23 @@ type recordService struct {
 }
 
 type getRecordByDateResponse struct {
-	Date  *model.DateList         `json:"date"`
+	// Date provides requested date, and 12 record date to and from requested date
+	Date *model.DateList `json:"date"`
+	// Types contains asset records group by asset types
 	Types []model.AssetTypeRecord `json:"types"`
 }
 
+//	@Summary		Get records by date
+//	@Tags			record
+//	@Description	Get records by specified date or latest available if no date supplied
+//	@Param			date	path	string	false	"Specified date for query in YYYY-MM-DD format" format(date) default()
+//	@Produce		json
+//	@Success		200	{object}	getRecordByDateResponse	"Success to retrieve records"
+//	@Failure		400	{object}	nil						"Input validation failed"
+//	@Failure		404	{object}	nil						"No any records found"
+//	@Failure		500	{object}	nil						"Generic server error"
+//	@Router			/api/records/{date} [get]
+//	@Router			/api/records/ [get]
 func (r recordService) getRecordByDate(c echo.Context) error {
 	dateParam := c.Param("date")
 	var date *model.Date = nil
@@ -70,8 +83,6 @@ func (r recordService) getRecordByDate(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "no record found on requested date")
 	}
 
-	tx.Commit()
-
 	return c.JSON(http.StatusOK, getRecordByDateResponse{
 		Date:  dateList,
 		Types: records,
@@ -79,9 +90,9 @@ func (r recordService) getRecordByDate(c echo.Context) error {
 }
 
 //	@Summary		Get record draft for making a new record date
-//	@Description	Filter only @DB: asset_types.isActive = true and @DB: assets.isActive = true as @DTO: AssetRecord
-//	@Description	Then prefill  @DTO: AssetRecord with the data from the latest @DB: records, null if there is no data of the asset found.
 //	@Tags			record
+//	@Description	Get new draft by filter only active assets and assetTypes.
+//	@Description	Then prefill the data from the latest records, null if there is no data from the latest record
 //	@Produce		json
 //	@Success		200	{object}	model.AssetTypeRecord	"Get draft successfully"
 //	@Failure		500	{object}	nil						"Generic server error"
@@ -98,11 +109,19 @@ func (r recordService) getRecordDraft(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot get record draft: %w", err))
 	}
 
-	tx.Commit()
-
 	return c.JSON(http.StatusOK, res)
 }
 
+//	@Summary		Get offset price for specified date
+//	@Tags			record
+//	@Description	Get asset offset prices for every asset in the record.
+//	@Description	For every asset, get only the latest record before or on the specified date
+//	@Param			date	path	string	true	"Specified date for query in YYYY-MM-DD format" format(date)
+//	@Produce		json
+//	@Success		200	{object}	[]model.OffsetDetail	"Success to retrieve records"
+//	@Failure		400	{object}	nil						"Input validation failed"
+//	@Failure		500	{object}	nil						"Generic server error"
+//	@Router			/api/records/offset/{date} [get]
 func (r recordService) getOffsetByDate(c echo.Context) error {
 	dateParam := c.Param("date")
 	if dateParam == "" {
@@ -126,8 +145,6 @@ func (r recordService) getOffsetByDate(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot get offset: %w", err))
 	}
 
-	tx.Commit()
-
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -141,10 +158,10 @@ type postRecordRequest struct {
 	Date *model.Date `json:"date" format:"date"`
 }
 
-//	@Summary	Add or edit record at specified date
+//	@Summary	Add or edit record of specified date
 //	@Tags		record
 //	@Accept		json
-//	@Param		request	body	postRecordRequest	true	"See field descriptions for more details"
+//	@Param		request	body	postRecordRequest	true	"Records to be added or modified"
 //	@Produce	json
 //	@Success	200	{object}	nil	"Success to create/edit records"
 //	@Failure	400	{object}	nil	"Input validation failed"
@@ -156,7 +173,6 @@ func (r recordService) postRecord(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot bind request body: %w", err))
 	}
-
 	if body.Date == nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "missing date")
 	}
