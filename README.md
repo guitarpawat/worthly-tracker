@@ -18,7 +18,7 @@ server:
 ### MVP 1
 - [x] Record date
 - [ ] Manage assets
-- [ ] Support for bought value offset
+- [x] Support for bought value offset
 
 ### MVP 2
 - [ ] Delete data
