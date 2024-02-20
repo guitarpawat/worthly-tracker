@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-sqlx/sqlx"
 	"github.com/shopspring/decimal"
 	"go.openly.dev/pointy"
 	"worthly-tracker/model"

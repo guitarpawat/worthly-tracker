@@ -5,7 +5,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-sqlx/sqlx"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 	"go.openly.dev/pointy"

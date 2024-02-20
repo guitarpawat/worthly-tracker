@@ -2,10 +2,10 @@ package db
 
 import (
 	"errors"
+	"github.com/go-sqlx/sqlx"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/viper"
 	"worthly-tracker/logs"

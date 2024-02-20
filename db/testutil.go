@@ -4,7 +4,7 @@ package db
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-sqlx/sqlx"
 )
 
 type MockConn struct {
