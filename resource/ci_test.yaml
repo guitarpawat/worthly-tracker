@@ -1,0 +1,5 @@
+datasource:
+  uri: 'file::memory:'
+server:
+  host:
+  port: 8080

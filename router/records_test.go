@@ -75,7 +75,7 @@ func (s *RecordSuite) TestGetRecordByDate_404_DateNotFound() {
 	c.SetParamValues("2023-01-31")
 
 	s.dbMock.ExpectBegin()
-	s.dbMock.ExpectRollback()
+	s.dbMock.ExpectCommit()
 
 	s.recordRepo.On("GetDate", model.MustNewDate("2023-01-31"), mock.Anything).Return(
 		&model.DateList{
@@ -104,7 +104,7 @@ func (s *RecordSuite) TestGetRecordByDate_404_NoRecordsInSystem() {
 	c.SetPath("/api/records/:date")
 
 	s.dbMock.ExpectBegin()
-	s.dbMock.ExpectRollback()
+	s.dbMock.ExpectCommit()
 
 	s.recordRepo.On("GetLatestDate", mock.Anything).Return(nil, nil)
 
