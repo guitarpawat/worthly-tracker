@@ -1,7 +1,7 @@
-boilerplate-file: ".mock.go.tmpl"
 dir: "mocks"
 outpkg: "mocks"
 filename: "mock_{{.InterfaceNameSnake}}.go"
+mock-build-tags: "test || unit || integration"
 packages:
   worthly-tracker/ports:
     config:
