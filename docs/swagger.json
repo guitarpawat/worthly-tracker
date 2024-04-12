@@ -13,6 +13,60 @@
     },
     "host": "localhost:8080",
     "paths": {
+        "/api/configs/header": {
+            "get": {
+                "description": "Get header configuration data and determine the link to highlight according to current page",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get header configuration",
+                "responses": {
+                    "200": {
+                        "description": "Success to get header config",
+                        "schema": {
+                            "$ref": "#/definitions/model.Header"
+                        }
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/configs/header/{currentPage}": {
+            "get": {
+                "description": "Get header configuration data and determine the link to highlight according to current page",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get header configuration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Specified current page",
+                        "name": "currentPage",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to get header config",
+                        "schema": {
+                            "$ref": "#/definitions/model.Header"
+                        }
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
         "/api/records/": {
             "get": {
                 "description": "Get records by specified date or latest available if no date supplied",
@@ -273,6 +327,31 @@
                 }
             }
         },
+        "model.Header": {
+            "type": "object",
+            "properties": {
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TopLink"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Link": {
+            "type": "object",
+            "properties": {
+                "href": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.OffsetDetail": {
             "type": "object",
             "properties": {
@@ -295,6 +374,26 @@
                 "offsetPrice": {
                     "type": "string",
                     "example": "-500.00"
+                }
+            }
+        },
+        "model.TopLink": {
+            "type": "object",
+            "properties": {
+                "childNodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Link"
+                    }
+                },
+                "highlight": {
+                    "type": "boolean"
+                },
+                "href": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

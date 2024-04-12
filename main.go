@@ -1,4 +1,3 @@
-//go:generate rm -rf mocks
 //go:generate mockery
 //go:generate swag fmt
 //go:generate swag init
