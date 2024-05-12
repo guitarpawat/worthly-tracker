@@ -67,6 +67,22 @@ definitions:
           type: string
         type: array
     type: object
+  model.Header:
+    properties:
+      links:
+        items:
+          $ref: '#/definitions/model.TopLink'
+        type: array
+      title:
+        type: string
+    type: object
+  model.Link:
+    properties:
+      href:
+        type: string
+      name:
+        type: string
+    type: object
   model.OffsetDetail:
     properties:
       assetId:
@@ -83,6 +99,19 @@ definitions:
         type: string
       offsetPrice:
         example: "-500.00"
+        type: string
+    type: object
+  model.TopLink:
+    properties:
+      childNodes:
+        items:
+          $ref: '#/definitions/model.Link'
+        type: array
+      highlight:
+        type: boolean
+      href:
+        type: string
+      name:
         type: string
     type: object
   router.getRecordByDateResponse:
@@ -122,6 +151,43 @@ info:
   title: Worthly Tracker
   version: "0.1"
 paths:
+  /api/configs/header:
+    get:
+      description: Get header configuration data and determine the link to highlight
+        according to current page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get header config
+          schema:
+            $ref: '#/definitions/model.Header'
+        "500":
+          description: Generic server error
+      summary: Get header configuration
+      tags:
+      - config
+  /api/configs/header/{currentPage}:
+    get:
+      description: Get header configuration data and determine the link to highlight
+        according to current page
+      parameters:
+      - description: Specified current page
+        in: path
+        name: currentPage
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get header config
+          schema:
+            $ref: '#/definitions/model.Header'
+        "500":
+          description: Generic server error
+      summary: Get header configuration
+      tags:
+      - config
   /api/records/:
     get:
       description: Get records by specified date or latest available if no date supplied

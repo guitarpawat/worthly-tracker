@@ -2,6 +2,7 @@ import * as formatter from '../common/formatter.js'
 import {ApiFetcher} from '../common/fetcher.js'
 import {renderErrorInfo} from '../common/error.js'
 import {fromRecordResponse} from '../model/record.js'
+import {loadAllCustomTags} from '../common/custom_tags.js';
 
 let fetcher = new ApiFetcher()
 let param = new URLSearchParams(window.location.search)
@@ -226,6 +227,7 @@ document.getElementById('date').onchange = changeDate
 document.getElementById('save-btn').onclick = await postRecord
 
 window.onload = async function () {
+    loadAllCustomTags()
     let path = window.location.pathname
     if(path.startsWith('/add')) {
         document.getElementById('record-action').innerText = 'Add Record'

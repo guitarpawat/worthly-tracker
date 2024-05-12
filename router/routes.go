@@ -13,6 +13,7 @@ func RegisterRoutes(e *echo.Echo) {
 
 	api := e.Group("/api")
 	recordsRouter(api.Group("/records"))
+	configsRouter(api.Group("/configs"))
 
 	swagger := e.Group("/swagger")
 	swagger.Any("*", echoSwagger.WrapHandler)

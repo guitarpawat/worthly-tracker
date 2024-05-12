@@ -1,9 +1,12 @@
+import {ApiResponse} from '../model/api_response.js'
+
 class ApiConfig {
     root = "http://localhost:8080/api"
     getRecord = "/records/:date"
     getRecordDraft = "/records/draft"
     postRecord = "/records/"
     getRecordOffset = "/records/offset/:date"
+    getHeader = "/configs/header/:currentPage"
 }
 
 export class ApiFetcher {
@@ -14,10 +17,7 @@ export class ApiFetcher {
             method: 'GET',
         })
         let json = await response.json()
-        return {
-            body: json,
-            status: response.status
-        }
+        return new ApiResponse(json, response.status)
     }
 
     async #post(url, body) {
@@ -29,10 +29,7 @@ export class ApiFetcher {
             },
         })
         let json = await response.json()
-        return {
-            body: json,
-            status: response.status
-        }
+        return new ApiResponse(json, response.status)
     }
 
     async getRecordsByDate(date) {
@@ -77,5 +74,10 @@ export class ApiFetcher {
 
         let url = this.config.root + this.config.postRecord
         return await this.#post(url, JSON.stringify(body))
+    }
+
+    async getHeader(currentPage) {
+        let url = this.config.root + this.config.getHeader.replace(":currentPage", currentPage)
+        return this.#get(url)
     }
 }
