@@ -45,7 +45,7 @@ func (s *RecordSuite) SetupTest() {
 	s.service = recordService{
 		recordRepo: s.recordRepo,
 		offsetRepo: s.offsetRepo,
-		conn:       db.GetDB(),
+		dbConn:     db.GetDB(),
 	}
 }
 

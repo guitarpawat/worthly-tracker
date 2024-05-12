@@ -21,7 +21,7 @@ func recordsRouter(api *echo.Group) {
 type recordService struct {
 	recordRepo ports.RecordRepo
 	offsetRepo ports.BoughtValueOffsetRepo
-	conn       ports.Connection
+	dbConn     ports.Connection
 }
 
 type getRecordByDateResponse struct {
@@ -55,7 +55,7 @@ func (r recordService) getRecordByDate(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("date is invalid format (YYYY-MM-DD): %w", err))
 	}
 
-	tx, err := r.conn.BeginTx()
+	tx, err := r.dbConn.BeginTx()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
@@ -98,7 +98,7 @@ func (r recordService) getRecordByDate(c echo.Context) error {
 //	@Failure		500	{object}	nil						"Generic server error"
 //	@Router			/api/records/draft [get]
 func (r recordService) getRecordDraft(c echo.Context) error {
-	tx, err := r.conn.BeginTx()
+	tx, err := r.dbConn.BeginTx()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
@@ -134,7 +134,7 @@ func (r recordService) getOffsetByDate(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("date is invalid format (YYYY-MM-DD): %w", err))
 	}
 
-	tx, err := r.conn.BeginTx()
+	tx, err := r.dbConn.BeginTx()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
@@ -181,7 +181,7 @@ func (r recordService) postRecord(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "nothing to upsert")
 	}
 
-	tx, err := r.conn.BeginTx()
+	tx, err := r.dbConn.BeginTx()
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Errorf("cannot create db transaction: %w", err))
 	}
