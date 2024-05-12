@@ -2,7 +2,7 @@ import {HeaderModel} from '../model/header.js'
 import {ApiFetcher} from '../common/fetcher.js'
 import {renderErrorInfo} from '../common/error.js';
 
-const pageNameAttr = 'page-name';
+const PAGE_NAME_ATTR = 'page-name';
 
 export class HeaderComponent extends HTMLElement {
     constructor() {
@@ -10,8 +10,8 @@ export class HeaderComponent extends HTMLElement {
 
         let pageName = ''
 
-        if(this.hasAttribute(pageNameAttr)){
-            pageName = this.getAttribute(pageNameAttr);
+        if(this.hasAttribute(PAGE_NAME_ATTR)){
+            pageName = this.getAttribute(PAGE_NAME_ATTR);
         }
 
         (async()=>{
