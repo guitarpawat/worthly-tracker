@@ -6,8 +6,8 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/viper"
+	_ "modernc.org/sqlite"
 	"worthly-tracker/logs"
 	"worthly-tracker/ports"
 	"worthly-tracker/resource"
@@ -42,7 +42,7 @@ func Init() {
 }
 
 func connectDB() {
-	connDb, err := sqlx.Open("sqlite3", viper.GetString(datasourceUriKey)+"?_foreign_keys=true"+cacheStr)
+	connDb, err := sqlx.Open("sqlite", viper.GetString(datasourceUriKey)+"?_foreign_keys=true"+cacheStr)
 	if err != nil {
 		logs.Log().Panicf("Unable to connect to database: %v\n", err)
 	}
@@ -54,7 +54,7 @@ func connectDB() {
 }
 
 func migrateDB() {
-	connMigrate, err := sqlx.Open("sqlite3", viper.GetString(datasourceUriKey)+"?_foreign_keys=false"+cacheStr)
+	connMigrate, err := sqlx.Open("sqlite", viper.GetString(datasourceUriKey)+"?_foreign_keys=false"+cacheStr)
 	if err != nil {
 		logs.Log().Panicf("Unable to connect to database: %v\n", err)
 	}
