@@ -22,7 +22,7 @@ func assetsManagementRouter(api *echo.Group) {
 	api.GET("/asset_types", as.getAssetTypes)
 	api.POST("/asset_types", as.updateAssetType)
 	api.PUT("/asset_types", as.addAssetType)
-	api.DELETE("/asset_types", as.deleteAssetType)
+	api.DELETE("/asset_types/:id", as.deleteAssetType)
 	api.GET("/assets", as.getAssets)
 	api.POST("/assets", as.updateAsset)
 	api.PUT("/assets", as.addAsset)
