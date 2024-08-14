@@ -34,7 +34,7 @@ const datasourceUriKey = "datasource.uri"
 func Init() {
 	if viper.GetBool("datasource.cache") {
 		cacheStr = "&mode=memory&cache=shared"
-		conn, _ := sqlx.Open("sqlite3", viper.GetString(datasourceUriKey)+"?_foreign_keys=true"+cacheStr)
+		conn, _ := sqlx.Open("sqlite", viper.GetString(datasourceUriKey)+"?_foreign_keys=true"+cacheStr)
 		_ = conn.Ping()
 	}
 	migrateDB()
