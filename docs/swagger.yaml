@@ -1,4 +1,31 @@
 definitions:
+  model.AssetDetail:
+    properties:
+      broker:
+        example: SCBAM
+        type: string
+      defaultIncrement:
+        example: "1000.00"
+        type: string
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: BTP
+        type: string
+      sequence:
+        example: 1
+        type: integer
+      typeId:
+        example: 1
+        type: integer
+      typeName:
+        example: Mutual Fund
+        type: string
+    type: object
   model.AssetRecord:
     properties:
       assetId:
@@ -28,6 +55,27 @@ definitions:
       realizedValue:
         example: "0.00"
         type: string
+    type: object
+  model.AssetTypeDetail:
+    properties:
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: true
+        type: boolean
+      isCash:
+        example: false
+        type: boolean
+      isLiability:
+        example: false
+        type: boolean
+      name:
+        example: Mutual Funds
+        type: string
+      sequence:
+        example: 1
+        type: integer
     type: object
   model.AssetTypeRecord:
     properties:
@@ -151,6 +199,197 @@ info:
   title: Worthly Tracker
   version: "0.1"
 paths:
+  /api/asset:
+    get:
+      description: Get asset data from database filtered by is_active and type_id,
+        or get all if not specified
+      parameters:
+      - description: Filter asset types by is_active
+        in: query
+        name: is_active
+        type: string
+      - description: Filter asset types by type_id
+        in: query
+        name: type_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to get assets
+          schema:
+            $ref: '#/definitions/model.AssetDetail'
+        "400":
+          description: Input validation failed
+        "404":
+          description: Asset not found
+        "500":
+          description: Generic server error
+      summary: Get assets
+      tags:
+      - asset_management
+  /api/asset_types:
+    get:
+      description: Get asset types by filtered is_active, or get all asset types if
+        not specified
+      parameters:
+      - description: Filter asset types by is_active
+        in: query
+        name: is_active
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.AssetTypeDetail'
+            type: array
+        "400":
+          description: Input validation failed
+        "404":
+          description: No any asset types found
+        "500":
+          description: Generic server error
+      summary: Get asset types
+      tags:
+      - asset_management
+    post:
+      consumes:
+      - application/json
+      description: Update asset type data to database
+      parameters:
+      - description: Asset type data for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTypeDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to update asset type
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Update asset type
+      tags:
+      - asset_management
+    put:
+      consumes:
+      - application/json
+      description: Insert new asset type to database
+      parameters:
+      - description: Asset type data for insert
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetTypeDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to insert asset type
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Add new asset type
+      tags:
+      - asset_management
+  /api/asset_types/{id}:
+    delete:
+      description: Delete asset type from database
+      parameters:
+      - description: Asset type id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to delete asset type
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Delete asset type
+      tags:
+      - asset_management
+  /api/assets:
+    post:
+      consumes:
+      - application/json
+      description: Update asset data to database
+      parameters:
+      - description: Asset data for update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to update asset
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Update asset
+      tags:
+      - asset_management
+    put:
+      consumes:
+      - application/json
+      description: Insert new asset to database
+      parameters:
+      - description: Asset data for insert
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssetDetail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to insert asset
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Add new asset
+      tags:
+      - asset_management
+  /api/assets/{id}:
+    delete:
+      description: Delete asset from database
+      parameters:
+      - description: Asset id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success to delete asset
+        "400":
+          description: Input validation failed
+        "500":
+          description: Generic server error
+      summary: Delete asset
+      tags:
+      - asset_management
   /api/configs/header:
     get:
       description: Get header configuration data and determine the link to highlight

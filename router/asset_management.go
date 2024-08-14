@@ -35,6 +35,16 @@ type assetManagementService struct {
 	dbConn        ports.Connection
 }
 
+//	@Summary		Get asset types
+//	@Tags			asset_management
+//	@Description	Get asset types by filtered is_active, or get all asset types if not specified
+//	@Param			is_active	query	string	false	"Filter asset types by is_active"
+//	@Produce		json
+//	@Success		200	{array}		model.AssetTypeDetail
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		404	{object}	nil	"No any asset types found"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/asset_types [get]
 func (a assetManagementService) getAssetTypes(c echo.Context) error {
 	isActiveParam := c.QueryParam("is_active")
 	var isActive *bool
@@ -68,6 +78,16 @@ func (a assetManagementService) getAssetTypes(c echo.Context) error {
 	return c.JSON(http.StatusOK, assetTypeDetail)
 }
 
+//	@Summary		Update asset type
+//	@Tags			asset_management
+//	@Description	Update asset type data to database
+//	@Accept			json
+//	@Param			request	body	model.AssetTypeDetail	true	"Asset type data for update"
+//	@Produce		json
+//	@Success		200	{object}	nil	"Success to update asset type"
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/asset_types [post]
 func (a assetManagementService) updateAssetType(c echo.Context) error {
 	var body model.AssetTypeDetail
 	err := c.Bind(&body)
@@ -82,6 +102,16 @@ func (a assetManagementService) updateAssetType(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 }
 
+//	@Summary		Add new asset type
+//	@Tags			asset_management
+//	@Description	Insert new asset type to database
+//	@Accept			json
+//	@Param			request	body	model.AssetTypeDetail	true	"Asset type data for insert"
+//	@Produce		json
+//	@Success		200	{object}	nil	"Success to insert asset type"
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/asset_types [put]
 func (a assetManagementService) addAssetType(c echo.Context) error {
 	var body model.AssetTypeDetail
 	err := c.Bind(&body)
@@ -120,6 +150,15 @@ func (a assetManagementService) upsertAssetType(body model.AssetTypeDetail, requ
 	return nil
 }
 
+//	@Summary		Delete asset type
+//	@Tags			asset_management
+//	@Description	Delete asset type from database
+//	@Param			id	path	int	true	"Asset type id"
+//	@Produce		json
+//	@Success		200	{object}	nil	"Success to delete asset type"
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/asset_types/{id} [delete]
 func (a assetManagementService) deleteAssetType(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -144,6 +183,17 @@ func (a assetManagementService) deleteAssetType(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 }
 
+//	@Summary		Get assets
+//	@Tags			asset_management
+//	@Description	Get asset data from database filtered by is_active and type_id, or get all if not specified
+//	@Param			is_active	query	string	false	"Filter asset types by is_active"
+//	@Param			type_id		query	string	false	"Filter asset types by type_id"
+//	@Produce		json
+//	@Success		200	{object}	model.AssetDetail	"Success to get assets"
+//	@Failure		400	{object}	nil					"Input validation failed"
+//	@Failure		404	{object}	nil					"Asset not found"
+//	@Failure		500	{object}	nil					"Generic server error"
+//	@Router			/api/asset [get]
 func (a assetManagementService) getAssets(c echo.Context) error {
 	isActiveParam := c.QueryParam("is_active")
 	var isActive *bool
@@ -187,6 +237,16 @@ func (a assetManagementService) getAssets(c echo.Context) error {
 	return c.JSON(http.StatusOK, assetDetail)
 }
 
+//	@Summary		Update asset
+//	@Tags			asset_management
+//	@Description	Update asset data to database
+//	@Accept			json
+//	@Param			request	body	model.AssetDetail	true	"Asset data for update"
+//	@Produce		json
+//	@Success		200	{object}	nil	"Success to update asset"
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/assets [post]
 func (a assetManagementService) updateAsset(c echo.Context) error {
 	var body model.AssetDetail
 	err := c.Bind(&body)
@@ -201,6 +261,16 @@ func (a assetManagementService) updateAsset(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 }
 
+//	@Summary		Add new asset
+//	@Tags			asset_management
+//	@Description	Insert new asset to database
+//	@Accept			json
+//	@Param			request	body	model.AssetDetail	true	"Asset data for insert"
+//	@Produce		json
+//	@Success		200	{object}	nil	"Success to insert asset"
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/assets [put]
 func (a assetManagementService) addAsset(c echo.Context) error {
 	var body model.AssetDetail
 	err := c.Bind(&body)
@@ -239,6 +309,15 @@ func (a assetManagementService) upsertAsset(body model.AssetDetail, requireId bo
 	return nil
 }
 
+//	@Summary		Delete asset
+//	@Tags			asset_management
+//	@Description	Delete asset from database
+//	@Param			id	path	int	true	"Asset id"
+//	@Produce		json
+//	@Success		200	{object}	nil	"Success to delete asset"
+//	@Failure		400	{object}	nil	"Input validation failed"
+//	@Failure		500	{object}	nil	"Generic server error"
+//	@Router			/api/assets/{id} [delete]
 func (a assetManagementService) deleteAsset(c echo.Context) error {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

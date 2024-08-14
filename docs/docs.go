@@ -18,6 +18,295 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/asset": {
+            "get": {
+                "description": "Get asset data from database filtered by is_active and type_id, or get all if not specified",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Get assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter asset types by is_active",
+                        "name": "is_active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter asset types by type_id",
+                        "name": "type_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to get assets",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetDetail"
+                        }
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "404": {
+                        "description": "Asset not found"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/asset_types": {
+            "get": {
+                "description": "Get asset types by filtered is_active, or get all asset types if not specified",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Get asset types",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter asset types by is_active",
+                        "name": "is_active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssetTypeDetail"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "404": {
+                        "description": "No any asset types found"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Insert new asset type to database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Add new asset type",
+                "parameters": [
+                    {
+                        "description": "Asset type data for insert",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTypeDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to insert asset type"
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Update asset type data to database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Update asset type",
+                "parameters": [
+                    {
+                        "description": "Asset type data for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetTypeDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to update asset type"
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/asset_types/{id}": {
+            "delete": {
+                "description": "Delete asset type from database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Delete asset type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Asset type id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to delete asset type"
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/assets": {
+            "put": {
+                "description": "Insert new asset to database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Add new asset",
+                "parameters": [
+                    {
+                        "description": "Asset data for insert",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to insert asset"
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Update asset data to database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Update asset",
+                "parameters": [
+                    {
+                        "description": "Asset data for update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssetDetail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to update asset"
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
+        "/api/assets/{id}": {
+            "delete": {
+                "description": "Delete asset from database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "asset_management"
+                ],
+                "summary": "Delete asset",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Asset id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success to delete asset"
+                    },
+                    "400": {
+                        "description": "Input validation failed"
+                    },
+                    "500": {
+                        "description": "Generic server error"
+                    }
+                }
+            }
+        },
         "/api/configs/header": {
             "get": {
                 "description": "Get header configuration data and determine the link to highlight according to current page",
@@ -238,6 +527,43 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.AssetDetail": {
+            "type": "object",
+            "properties": {
+                "broker": {
+                    "type": "string",
+                    "example": "SCBAM"
+                },
+                "defaultIncrement": {
+                    "type": "string",
+                    "example": "1000.00"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "BTP"
+                },
+                "sequence": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "typeId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "typeName": {
+                    "type": "string",
+                    "example": "Mutual Fund"
+                }
+            }
+        },
         "model.AssetRecord": {
             "type": "object",
             "properties": {
@@ -276,6 +602,35 @@ const docTemplate = `{
                 "realizedValue": {
                     "type": "string",
                     "example": "0.00"
+                }
+            }
+        },
+        "model.AssetTypeDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "isCash": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "isLiability": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Mutual Funds"
+                },
+                "sequence": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
