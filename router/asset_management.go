@@ -26,7 +26,7 @@ func assetsManagementRouter(api *echo.Group) {
 	api.GET("/assets", as.getAssets)
 	api.POST("/assets", as.updateAsset)
 	api.PUT("/assets", as.addAsset)
-	api.DELETE("/assets", as.deleteAsset)
+	api.DELETE("/assets/:id", as.deleteAsset)
 }
 
 type assetManagementService struct {
