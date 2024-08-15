@@ -2,8 +2,9 @@ import {ApiFetcher} from '../common/fetcher.js'
 import {renderErrorInfo} from '../common/error.js'
 import {fromRecordResponse, RecordsSummary} from '../model/record.js'
 import * as formatter from '../common/formatter.js'
-import {BigNumber} from '../bignumber.mjs'
-import {loadAllCustomTags} from '../common/custom_tags.js';
+import {init, BigNumber} from '../common/base.js';
+
+init()
 
 let fetcher = new ApiFetcher()
 let param = new URLSearchParams(window.location.search)
@@ -313,7 +314,6 @@ window.onpopstate = async function (event) {
 }
 
 window.onload = async function() {
-    loadAllCustomTags()
     await getRecordOnLoad()
 }
 document.getElementById('date-selector').onchange = async function () {await changeRecord(document.getElementById('date-selector').value, true)}
