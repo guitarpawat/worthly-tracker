@@ -1,7 +1,0 @@
-input[disabled] {
-    pointer-events:none
-}
-
-worthly-header * {
-    z-index: 100000;
-}
