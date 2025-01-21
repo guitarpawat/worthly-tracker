@@ -18,19 +18,14 @@ func (r *RecordRepository) BeginTx(ctx context.Context) (*RecordRepository, *Tx)
 	return &RecordRepository{db: tx}, &Tx{tx: tx}
 }
 
-func (r *RecordRepository) FindByDate(ctx context.Context, current date.Date, preload bool) (res []entity.Record, err error) {
-	if preload {
-		err = r.db.WithContext(ctx).Preload("Asset", "Asset.AssetType").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
-			Where(&entity.Record{Date: current}).Find(&res).Error
-	} else {
-		err = r.db.WithContext(ctx).Preload("Asset.Sequence", "Asset.Name", "Asset.Broker", "Asset.AssetType.Sequence", "Asset.AssetType.Name").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
-			Where(&entity.Record{Date: current}).Find(&res).Error
-	}
+func (r *RecordRepository) FindByDate(ctx context.Context, current date.Date) (res []entity.Record, err error) {
+	err = r.db.WithContext(ctx).Preload("Asset", "Asset.AssetType").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
+		Where(&entity.Record{Date: current}).Find(&res).Error
 
 	return res, err
 }
 
-func (r *RecordRepository) FindForDraft(ctx context.Context, preload bool) (res []entity.Record, err error) {
+func (r *RecordRepository) FindForDraft(ctx context.Context) (res []entity.Record, err error) {
 	latest, err := r.GetLatestDate(ctx)
 	if err != nil {
 		return nil, err
@@ -42,13 +37,8 @@ func (r *RecordRepository) FindForDraft(ctx context.Context, preload bool) (res 
 		"Asset.AssetType.IsActive": true,
 	}
 
-	if preload {
-		err = r.db.WithContext(ctx).Preload("Asset", "Asset.AssetType").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
-			Where(where).Find(&res).Error
-	} else {
-		err = r.db.WithContext(ctx).Preload("Asset.Sequence", "Asset.AssetType.Sequence", "Asset.IsActive", "Asset.AssetType.IsActive", "Asset.Name", "Asset.Broker", "Asset.AssetType.Name").
-			Order("Asset.AssetType.Sequence, Asset.Sequence, Id").Where(where).Find(&res).Error
-	}
+	err = r.db.WithContext(ctx).Preload("Asset", "Asset.AssetType").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
+		Where(where).Find(&res).Error
 
 	return res, err
 }

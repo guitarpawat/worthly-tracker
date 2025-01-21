@@ -17,7 +17,7 @@ func (r *AssetRepository) BeginTx(ctx context.Context) (*AssetRepository, *Tx) {
 	return &AssetRepository{db: tx}, &Tx{tx: tx}
 }
 
-func (r *AssetRepository) FindByIsActiveAndTypeId(ctx context.Context, isActive *bool, assetTypeId *int, preload bool) (res []entity.Asset, err error) {
+func (r *AssetRepository) FindByIsActiveAndTypeId(ctx context.Context, isActive *bool, assetTypeId *int) (res []entity.Asset, err error) {
 	where := make(map[string]any)
 	if isActive != nil {
 		where["IsActive"] = *isActive
@@ -26,11 +26,8 @@ func (r *AssetRepository) FindByIsActiveAndTypeId(ctx context.Context, isActive 
 		where["AssetTypeId"] = *assetTypeId
 	}
 
-	if preload {
-		err = r.db.WithContext(ctx).Preload("AssetType").Order("AssetType.Sequence, Sequence").Where(where).Find(&res).Error
-	} else {
-		err = r.db.WithContext(ctx).Preload("AssetType.Sequence").Order("AssetType.Sequence, Sequence").Where(where).Find(&res).Error
-	}
+	err = r.db.WithContext(ctx).Preload("AssetType").Order("AssetType.Sequence, Sequence").Where(where).Find(&res).Error
+
 	return res, err
 }
 

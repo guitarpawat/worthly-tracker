@@ -17,17 +17,13 @@ func (r *AssetTypeRepository) BeginTx(ctx context.Context) (*AssetTypeRepository
 	return &AssetTypeRepository{db: tx}, &Tx{tx: tx}
 }
 
-func (r *AssetTypeRepository) FindByIsActive(ctx context.Context, isActive *bool, preload bool) (res []entity.AssetType, err error) {
+func (r *AssetTypeRepository) FindByIsActive(ctx context.Context, isActive *bool) (res []entity.AssetType, err error) {
 	where := make(map[string]any)
 	if isActive != nil {
 		where["IsActive"] = isActive
 	}
 
-	if preload {
-		err = r.db.WithContext(ctx).Preload("Assets").Order("Sequence").Where(where).Find(&res).Error
-	} else {
-		err = r.db.WithContext(ctx).Order("Sequence").Where(where).Find(&res).Error
-	}
+	err = r.db.WithContext(ctx).Preload("Assets").Order("Sequence").Where(where).Find(&res).Error
 
 	return res, err
 }

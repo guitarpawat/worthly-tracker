@@ -18,7 +18,7 @@ func (r *ValueOffsetRepository) BeginTx(ctx context.Context) (*ValueOffsetReposi
 	return &ValueOffsetRepository{db: tx}, &Tx{tx: tx}
 }
 
-func (r *ValueOffsetRepository) FindByEffectiveDateAndAssetId(ctx context.Context, effectiveDate *date.Date, assetId *int, preload bool) (res []entity.ValueOffset, err error) {
+func (r *ValueOffsetRepository) FindByEffectiveDateAndAssetId(ctx context.Context, effectiveDate *date.Date, assetId *int) (res []entity.ValueOffset, err error) {
 	where := make(map[string]any)
 	if effectiveDate != nil {
 		where["EffectiveDate"] = effectiveDate
@@ -27,11 +27,7 @@ func (r *ValueOffsetRepository) FindByEffectiveDateAndAssetId(ctx context.Contex
 		where["AssetId"] = assetId
 	}
 
-	if preload {
-		err = r.db.WithContext(ctx).Preload("Asset").Order("EffectiveDate, Asset.Sequence, AssetId").Where(where).Select(&res).Error
-	} else {
-		err = r.db.WithContext(ctx).Preload("Asset.Sequence").Order("EffectiveDate, Asset.Sequence, AssetId").Where(where).Select(&res).Error
-	}
+	err = r.db.WithContext(ctx).Preload("Asset").Order("EffectiveDate, Asset.Sequence, AssetId").Where(where).Select(&res).Error
 
 	return res, err
 }
