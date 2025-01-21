@@ -23,7 +23,7 @@ func (r *RecordRepository) FindByDate(ctx context.Context, current date.Date, pr
 		err = r.db.WithContext(ctx).Preload("Asset", "Asset.AssetType").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
 			Where(&entity.Record{Date: current}).Find(&res).Error
 	} else {
-		err = r.db.WithContext(ctx).Preload("Asset.Sequence", "Asset.AssetType.Sequence").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
+		err = r.db.WithContext(ctx).Preload("Asset.Sequence", "Asset.Name", "Asset.Broker", "Asset.AssetType.Sequence", "Asset.AssetType.Name").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
 			Where(&entity.Record{Date: current}).Find(&res).Error
 	}
 
@@ -46,7 +46,7 @@ func (r *RecordRepository) FindForDraft(ctx context.Context, preload bool) (res 
 		err = r.db.WithContext(ctx).Preload("Asset", "Asset.AssetType").Order("Asset.AssetType.Sequence, Asset.Sequence, Id").
 			Where(where).Find(&res).Error
 	} else {
-		err = r.db.WithContext(ctx).Preload("Asset.Sequence", "Asset.AssetType.Sequence", "Asset.IsActive", "Asset.AssetType.IsActive").
+		err = r.db.WithContext(ctx).Preload("Asset.Sequence", "Asset.AssetType.Sequence", "Asset.IsActive", "Asset.AssetType.IsActive", "Asset.Name", "Asset.Broker", "Asset.AssetType.Name").
 			Order("Asset.AssetType.Sequence, Asset.Sequence, Id").Where(where).Find(&res).Error
 	}
 

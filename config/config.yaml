@@ -3,5 +3,5 @@ server:
 
 datasource:
   sqlite:
-    uri: file:/home/guitarpawat/OneDrive/worthly-tracker-db/testgorm.sqlite
+    uri: file::memory:?cache=shared
     autoMigrate: true

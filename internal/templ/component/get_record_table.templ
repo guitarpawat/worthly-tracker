@@ -1,0 +1,67 @@
+package component
+
+import "github.com/guitarpawat/worthly-tracker/internal/entity"
+import "github.com/guitarpawat/worthly-tracker/utility/format"
+import "github.com/shopspring/decimal"
+
+type GetRecordTableModel struct {
+    AssetTypes []GetRecordTableAssetTypeModel
+}
+
+type GetRecordTableAssetTypeModel struct {
+    Name string
+    Records []entity.Record
+}
+
+templ GetRecordTable(model GetRecordTableModel) {
+    <table class="table table-bordered table-hover text-nowrap" id="record-table">
+        <thead class="table-secondary table-group-divider sticky-top">
+            <tr>
+                <th class="text-center" scope="col">Name</th>
+                <th class="text-center" scope="col">Place</th>
+                <th class="text-center" scope="col">Bought Value</th>
+                <th class="text-center" scope="col">Current Value</th>
+                <th class="text-center" scope="col">Unrealized Value</th>
+                <th class="text-center" scope="col">UR %</th>
+                <th class="text-center" scope="col">Realized Value</th>
+                <th class="text-center" scope="col">Profit %</th>
+                <th class="text-center" scope="col">Remarks</th>
+            </tr>
+        </thead>
+        for _, assetType := range model.AssetTypes {
+            @GetRecordTableAssetType(assetType)
+        }
+    </table>
+}
+
+templ GetRecordTableAssetType(model GetRecordTableAssetTypeModel) {
+    <tr class="table-light">
+        <th class="text-center border-end-0" colspan="8" scope="row">{model.Name}</th>
+        <td class="text-start border-start-0"></td>
+    </tr>
+    for _, record := range model.Records {
+        @GetRecordTableRow(record)
+    }
+}
+
+templ GetRecordTableRow(record entity.Record) {
+    <tr>
+        <th class="text-start" scope="row">{record.Asset.Name}</th>
+        <td class="text-start">{record.Asset.Broker}</td>
+        <td class="text-end">{format.DecimalToMoney(record.BoughtValue)}</td>
+        <td class="text-end">{format.DecimalToMoney(record.CurrentValue)}</td>
+        <td class="text-end">{format.DecimalToMoney(getProfit(record.BoughtValue, record.CurrentValue))}</td>
+        <td class="text-end">{format.Percent(getProfitPercent(record.BoughtValue, record.CurrentValue))}</td>
+        <td class="text-end">{format.DecimalToMoney(getProfit(record.BoughtValue, record.CurrentValue.Add(record.RealizedValue)))}</td>
+        <td class="text-end">{format.Percent(getProfitPercent(record.BoughtValue, record.CurrentValue.Add(record.RealizedValue)))}</td>
+        <td class="text-start">{record.Note.String}</td>
+    </tr>
+}
+
+func getProfit(bought, current decimal.Decimal) decimal.Decimal {
+    return current.Sub(bought)
+}
+
+func getProfitPercent(bought, current decimal.Decimal) decimal.Decimal {
+    return getProfit(bought, current).Div(bought)
+}
