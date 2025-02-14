@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	_ "embed"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/guitarpawat/worthly-tracker/internal/adapter/db"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
@@ -27,11 +28,16 @@ type Server struct {
 	Port int `validate:"required"`
 }
 
+func setDefaultConfig(v *viper.Viper) {
+	v.SetDefault("datasource.sqlite.uri", "file::memory:?cache=shared&")
+}
+
 func Init(filePath string) (Config, error) {
 	v := viper.New()
 
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	setDefaultConfig(v)
 
 	v.SetConfigType("yaml")
 	err := v.ReadConfig(bytes.NewReader(defaultConfig))
@@ -66,7 +72,7 @@ func Init(filePath string) (Config, error) {
 	// validate config
 	err = validator.New(validator.WithRequiredStructEnabled()).Struct(cfg)
 	if err != nil {
-		return Config{}, err
+		return Config{}, fmt.Errorf("fail to validate config: %w", err)
 	}
 
 	return cfg, err

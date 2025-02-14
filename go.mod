@@ -17,7 +17,7 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.3
 	go.openly.dev/pointy v1.3.0
@@ -65,6 +65,7 @@ require (
 	github.com/rickb777/plural v1.4.2 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/samber/lo v1.49.1 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect

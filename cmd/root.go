@@ -3,6 +3,8 @@ package cmd
 import (
 	"github.com/guitarpawat/worthly-tracker/config"
 	"github.com/guitarpawat/worthly-tracker/internal/adapter/db"
+	"github.com/guitarpawat/worthly-tracker/internal/adapter/http"
+	"github.com/guitarpawat/worthly-tracker/internal/service"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/spf13/cobra"
 )
@@ -38,7 +40,17 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	_ = db.NewRepositories(sqlite)
+	repos := db.NewRepositories(sqlite)
 
-	return nil
+	// service
+	recordService := service.NewRecords(repos.Record)
+
+	// handler
+	recordHandler := http.NewRecordHandler(recordService)
+
+	router := http.NewRouter(http.RouterConfig{Port: cfg.Server.Port}, recordHandler)
+
+	err = router.Start()
+	logs.Log().Errorf("server stopped with error: %w", err)
+	return err
 }

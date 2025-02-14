@@ -2,22 +2,22 @@ package db
 
 import (
 	"context"
-	"github.com/guitarpawat/worthly-tracker/internal/entity"
+	"github.com/guitarpawat/worthly-tracker/internal/model"
 	"gorm.io/gorm"
 )
 
-type AssetTypeRepository struct {
+type AssetTypesRepository struct {
 	db *gorm.DB
 }
 
-var _ TxRepository[*AssetTypeRepository] = (*AssetTypeRepository)(nil)
+var _ TxRepository[*AssetTypesRepository] = (*AssetTypesRepository)(nil)
 
-func (r *AssetTypeRepository) BeginTx(ctx context.Context) (*AssetTypeRepository, *Tx) {
+func (r *AssetTypesRepository) BeginTx(ctx context.Context) (*AssetTypesRepository, *Tx) {
 	tx := r.db.WithContext(ctx).Begin()
-	return &AssetTypeRepository{db: tx}, &Tx{tx: tx}
+	return &AssetTypesRepository{db: tx}, &Tx{tx: tx}
 }
 
-func (r *AssetTypeRepository) FindByIsActive(ctx context.Context, isActive *bool) (res []entity.AssetType, err error) {
+func (r *AssetTypesRepository) FindByIsActive(ctx context.Context, isActive *bool) (res []model.AssetType, err error) {
 	where := make(map[string]any)
 	if isActive != nil {
 		where["IsActive"] = isActive
@@ -28,20 +28,20 @@ func (r *AssetTypeRepository) FindByIsActive(ctx context.Context, isActive *bool
 	return res, err
 }
 
-func (r *AssetTypeRepository) FindNames(ctx context.Context, isActive *bool) (res string, err error) {
+func (r *AssetTypesRepository) FindNames(ctx context.Context, isActive *bool) (res string, err error) {
 	where := make(map[string]any)
 	if isActive != nil {
 		where["IsActive"] = *isActive
 	}
 
-	err = r.db.WithContext(ctx).Order("Name").Model(new(entity.AssetType)).Where(where).Pluck("name", &res).Error
+	err = r.db.WithContext(ctx).Order("Name").Model(new(model.AssetType)).Where(where).Pluck("name", &res).Error
 	return res, err
 }
 
-func (r *AssetTypeRepository) Upsert(ctx context.Context, asset entity.AssetType) error {
+func (r *AssetTypesRepository) Upsert(ctx context.Context, asset model.AssetType) error {
 	return r.db.WithContext(ctx).Save(asset).Error
 }
 
-func (r *AssetTypeRepository) Delete(ctx context.Context, id int) error {
-	return r.db.WithContext(ctx).Delete(new(entity.AssetType), id).Error
+func (r *AssetTypesRepository) Delete(ctx context.Context, id int) error {
+	return r.db.WithContext(ctx).Delete(new(model.AssetType), id).Error
 }
