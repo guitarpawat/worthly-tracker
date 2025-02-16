@@ -7,7 +7,6 @@ import (
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
 )
 
 type RouterConfig struct {
@@ -75,14 +74,12 @@ func (r *Router) registerRecordsRoutes() {
 }
 
 func render(ctx echo.Context, status int, t templ.Component) error {
-	ctx.Response().WriteHeader(status)
-	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	err := t.Render(ctx.Request().Context(), ctx.Response().Writer)
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, map[string]string{
-			"error": fmt.Errorf("failed to render response template: %w", err).Error(),
-		})
+	buf := templ.GetBuffer()
+	defer templ.ReleaseBuffer(buf)
+
+	if err := t.Render(ctx.Request().Context(), buf); err != nil {
+		return err
 	}
 
-	return nil
+	return ctx.HTML(status, buf.String())
 }
