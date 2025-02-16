@@ -72,7 +72,6 @@ func (r *Router) registerStaticContent() {
 func (r *Router) registerRecordsRoutes() {
 	r.e.GET("/", r.recordsHandler.GetRecordsByDate)
 	r.e.GET("/records", r.recordsHandler.GetRecordsByDate)
-	r.e.GET("/records/partial/summary_table", r.recordsHandler.GetPartialRecordsByDate)
 }
 
 func render(ctx echo.Context, status int, t templ.Component) error {

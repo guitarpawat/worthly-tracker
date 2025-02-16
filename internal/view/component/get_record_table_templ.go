@@ -100,20 +100,20 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/records/partial/summary_table?date=" + data.PastDate[len(data.PastDate)-1].Format(time.DateOnly))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("/records?date=" + data.PastDate[len(data.PastDate)-1].Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 49, Col: 128}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 49, Col: 106}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-target=\"#get-record-table\">&lt; Prev</button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-target=\"#get-record-table\" hx-swap=\"outerHTML\" hx-push-url=\"true\">&lt; Prev</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"col-auto\"><select class=\"form-select\" id=\"date-selector\" name=\"date\" hx-get=\"/records/partial/summary_table\" hx-target=\"#get-record-table\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"col-auto\"><select class=\"form-select\" id=\"date-selector\" name=\"date\" hx-get=\"/records\" hx-target=\"#get-record-table\" hx-swap=\"outerHTML\" hx-push-url=\"true\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -125,7 +125,7 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 56, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 57, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -138,7 +138,7 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 56, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 57, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -156,7 +156,7 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.CurrentDate.Format(time.DateOnly))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 58, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 59, Col: 116}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -174,7 +174,7 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 60, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 61, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +187,7 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 60, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 61, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -213,20 +213,20 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("/records/partial/summary_table?date=" + data.FutureDate[0].Format(time.DateOnly))
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("/records?date=" + data.FutureDate[0].Format(time.DateOnly))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 69, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 70, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" hx-target=\"#get-record-table\">Next &gt;</button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" hx-target=\"#get-record-table\" hx-swap=\"outerHTML\" hx-push-url=\"true\">Next &gt;</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div><div class=\"col-auto\"><button class=\"btn btn-outline-primary bg-gradient\" hx-get=\"/api/web/component/get_record_table\" hx-target=\"#get-record-table\">Latest</button></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div><div class=\"col-auto\"><button class=\"btn btn-outline-primary bg-gradient\" hx-get=\"/records\" hx-target=\"#get-record-table\" hx-swap=\"outerHTML\" hx-push-url=\"true\">Latest</button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -262,7 +262,7 @@ func getRecordTableAssetType(data model.GetRecordAssetType) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 81, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 83, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -310,7 +310,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 91, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 93, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -328,7 +328,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(data.Broker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 93, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 95, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -341,7 +341,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.CurrentValue))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 95, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 97, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -354,7 +354,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(data.Note)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 100, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 102, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -372,7 +372,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(data.Broker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 102, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 104, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -385,7 +385,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.BoughtValue))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 103, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 105, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -398,7 +398,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.CurrentValue))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 104, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 106, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -411,7 +411,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(getProfit(data.BoughtValue, data.CurrentValue)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 105, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 107, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -424,7 +424,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(format.Percent(getProfitPercent(data.BoughtValue, data.CurrentValue)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 106, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 108, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -447,7 +447,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.RealizedValue))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 110, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 112, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -465,7 +465,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(format.Percent(getProfitPercent(data.BoughtValue, data.CurrentValue.Add(data.RealizedValue))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 112, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 114, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -478,7 +478,7 @@ func GetRecordTableRow(data model.GetRecordData) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(data.Note)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 113, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 115, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -525,14 +525,14 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 			templ_7745c5c3_Var25 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<tfoot class=\"table-light table-group-divider\"><tr><th class=\"text-center\" scope=\"rowgroup\" rowspan=\"2\">Total</th><th class=\"text-center\" scope=\"row\">Investment</th><td class=\"text-end\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<tfoot class=\"table-light table-group-divider sticky-bottom\"><tr><th class=\"text-center\" scope=\"rowgroup\" rowspan=\"2\">Total</th><th class=\"text-center\" scope=\"row\">Investment</th><td class=\"text-end\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.InvestmentBoughtValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 131, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 133, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -545,7 +545,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.InvestmentCurrentValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 132, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 134, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -558,7 +558,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(getProfit(data.InvestmentBoughtValue, data.InvestmentCurrentValue)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 133, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 135, Col: 120}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -571,7 +571,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(format.Percent(getProfitPercent(data.InvestmentBoughtValue, data.InvestmentCurrentValue)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 134, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 136, Col: 120}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -584,7 +584,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.InvestmentRealizedValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 135, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 137, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -597,7 +597,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(format.Percent(getProfitPercent(data.InvestmentBoughtValue, data.InvestmentCurrentValue.Add(data.InvestmentRealizedValue))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 136, Col: 154}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 138, Col: 154}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -610,7 +610,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.InvestmentCurrentValue.Add(data.CashValue)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 137, Col: 126}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 139, Col: 126}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -623,7 +623,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(format.Percent(getCashPercentToNetWorthPercent(data.InvestmentCurrentValue, data.CashValue)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 138, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 140, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -636,7 +636,7 @@ func getRecordTableSummary(data GetRecordTableSummaryModel) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(format.DecimalToMoney(data.CashValue))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 143, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `component/get_record_table.templ`, Line: 145, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {

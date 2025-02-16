@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"github.com/guitarpawat/worthly-tracker/internal/constant"
 	"github.com/guitarpawat/worthly-tracker/internal/service"
 	"github.com/guitarpawat/worthly-tracker/internal/view/component"
 	"github.com/guitarpawat/worthly-tracker/internal/view/page"
@@ -38,28 +39,11 @@ func (h *RecordHandler) GetRecordsByDate(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return render(ctx, http.StatusOK, page.GetRecord(resp))
-}
-
-func (h *RecordHandler) GetPartialRecordsByDate(ctx echo.Context) error {
-	var d date.Date
-	var err error
-	dateParam := ctx.QueryParam("date")
-	if dateParam == "" {
-		d = date.Zero
+	if ctx.Request().Header.Get(constant.HeaderKeyHtmxRequest) == constant.HeaderValueHtmxRequest {
+		return render(ctx, http.StatusOK, component.GetRecordTable(resp))
 	} else {
-		d, err = date.Parse(time.DateOnly, dateParam)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot parse input date: %w", err))
-		}
+		return render(ctx, http.StatusOK, page.GetRecord(resp))
 	}
-
-	resp, err := h.service.GetByDate(ctx.Request().Context(), d)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-
-	return render(ctx, http.StatusOK, component.GetRecordTable(resp))
 }
 
 func (h *RecordHandler) GetRecordsForDraft(ctx echo.Context) error {

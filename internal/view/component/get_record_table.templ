@@ -46,12 +46,13 @@ templ getRecordTableDateSelector(data model.DateResult) {
                 <button class="btn btn-outline-secondary" disabled>&lt; Prev</button>
             } else {
                 <button class="btn btn-outline-secondary"
-                    hx-get={"/records/partial/summary_table?date=" + data.PastDate[len(data.PastDate) - 1].Format(time.DateOnly)}
-                    hx-target="#get-record-table">&lt; Prev</button>
+                    hx-get={"/records?date=" + data.PastDate[len(data.PastDate) - 1].Format(time.DateOnly)}
+                    hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">&lt; Prev</button>
             }
         </div>
         <div class="col-auto">
-            <select class="form-select" id="date-selector" name="date" hx-get="/records/partial/summary_table" hx-target="#get-record-table">
+            <select class="form-select" id="date-selector" name="date" hx-get="/records"
+            hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">
                 for _, date := range data.PastDate {
                     <option value={date.Format(time.DateOnly)}>{date.Format(time.DateOnly)}</option>
                 }
@@ -66,12 +67,13 @@ templ getRecordTableDateSelector(data model.DateResult) {
                 <button class="btn btn-outline-secondary" disabled>Next &gt;</button>
             } else {
                 <button class="btn btn-outline-secondary"
-                    hx-get={"/records/partial/summary_table?date=" + data.FutureDate[0].Format(time.DateOnly)}
-                    hx-target="#get-record-table">Next &gt;</button>
+                    hx-get={"/records?date=" + data.FutureDate[0].Format(time.DateOnly)}
+                    hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">Next &gt;</button>
             }
         </div>
         <div class="col-auto">
-            <button class="btn btn-outline-primary bg-gradient" hx-get="/api/web/component/get_record_table" hx-target="#get-record-table">Latest</button>
+            <button class="btn btn-outline-primary bg-gradient" hx-get="/records"
+            hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">Latest</button>
         </div>
     </div>
 }
@@ -124,7 +126,7 @@ type GetRecordTableSummaryModel struct {
 }
 
 templ getRecordTableSummary(data GetRecordTableSummaryModel) {
-	<tfoot class="table-light table-group-divider">
+	<tfoot class="table-light table-group-divider sticky-bottom">
 	    <tr>
 	        <th class="text-center" scope="rowgroup" rowspan="2">Total</th>
 	        <th class="text-center" scope="row">Investment</th>

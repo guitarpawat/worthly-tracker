@@ -2,5 +2,5 @@ server:
   port: 8081
 datasource:
   sqlite:
-    uri:
+    uri: file:/home/guitarpawat/OneDrive/worthly-tracker-db/testgorm.sqlite
     autoMigrate: true
