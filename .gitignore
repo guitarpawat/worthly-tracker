@@ -1,4 +1,5 @@
 /resource/*.yaml
+/config/*.yaml
 /old
 
 # Created by https://www.toptal.com/developers/gitignore/api/goland+all,go
