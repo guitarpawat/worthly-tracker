@@ -1,0 +1,6 @@
+server:
+  port: 8081
+datasource:
+  sqlite:
+    uri:
+    autoMigrate: true
