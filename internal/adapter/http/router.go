@@ -75,15 +75,14 @@ func (r *Router) registerRecordsRoutes() {
 }
 
 func render(ctx echo.Context, status int, t templ.Component) error {
+	ctx.Response().WriteHeader(status)
+	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 	err := t.Render(ctx.Request().Context(), ctx.Response().Writer)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, map[string]string{
 			"error": fmt.Errorf("failed to render response template: %w", err).Error(),
 		})
 	}
-
-	ctx.Response().Writer.WriteHeader(status)
-	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 
 	return nil
 }
