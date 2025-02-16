@@ -13,7 +13,6 @@ var defaultFormat = accounting.Accounting{
 	Decimal:        ".",
 	Format:         "%s %v ",
 	FormatNegative: "(%s %v)",
-	FormatZero:     " ",
 }
 
 var hundred = decimal.NewFromInt(100)

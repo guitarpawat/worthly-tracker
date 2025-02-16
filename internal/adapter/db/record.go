@@ -58,7 +58,7 @@ func (r *RecordsRepository) DeleteByDate(ctx context.Context, date date.Date) er
 }
 
 func (r *RecordsRepository) GetLatestDate(ctx context.Context) (res date.Date, err error) {
-	err = r.db.Table("records").WithContext(ctx).Order("Date").Limit(1).Select("Date").Scan(&res).Error
+	err = r.db.Table("records").WithContext(ctx).Order("Date DESC").Limit(1).Select("Date").Scan(&res).Error
 	if err == nil && res == date.Zero {
 		return res, sql.ErrNoRows
 	}
@@ -77,13 +77,13 @@ func (r *RecordsRepository) FindPastAndFutureDate(ctx context.Context, current d
 
 	var past []date.Date
 
-	err = r.db.WithContext(ctx).Table("records").Order("Date").Limit(12).Where("Date < ?", current).Pluck("Date", &past).Error
+	err = r.db.WithContext(ctx).Table("records").Order("Date").Limit(12).Where("Date < ?", current).Distinct().Pluck("Date", &past).Error
 	if err != nil {
 		return model.DateResult{}, err
 	}
 
 	var future []date.Date
-	err = r.db.WithContext(ctx).Table("records").Order("Date").Limit(12).Where("Date > ?", current).Pluck("Date", &future).Error
+	err = r.db.WithContext(ctx).Table("records").Order("Date").Limit(12).Where("Date > ?", current).Distinct().Pluck("Date", &future).Error
 	if err != nil {
 		return model.DateResult{}, err
 	}

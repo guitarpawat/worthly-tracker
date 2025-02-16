@@ -6,7 +6,6 @@ import (
 	"github.com/guitarpawat/worthly-tracker/internal/adapter/db"
 	"github.com/guitarpawat/worthly-tracker/internal/model"
 	"github.com/rickb777/date/v2"
-	"github.com/samber/lo"
 )
 
 type Records struct {
@@ -38,17 +37,26 @@ func (r *Records) GetByDate(ctx context.Context, d date.Date) (model.GetRecordRe
 		return model.GetRecordResponse{}, fmt.Errorf("cannot get date list: %w", err)
 	}
 
-	mapByAssetType := lo.GroupBy(records, func(item model.Record) int {
-		return item.Asset.AssetType.Id
-	})
+	var assetTypes []model.GetRecordAssetType
 
-	var assetTypes = make([]model.GetRecordAssetType, 0, len(mapByAssetType))
-
-	for _, record := range mapByAssetType {
-		var assetType model.GetRecordAssetType
-		assetType.Name = record[0].Asset.AssetType.Name
-		assetType.Records = record
-		assetTypes = append(assetTypes, assetType)
+	for idx, record := range records {
+		if idx == 0 || assetTypes[len(assetTypes)-1].Id != record.Asset.AssetType.Id {
+			assetTypes = append(assetTypes, model.GetRecordAssetType{
+				Id:      record.Asset.AssetType.Id,
+				Name:    record.Asset.AssetType.Name,
+				Records: make([]model.GetRecordData, 0),
+			})
+		}
+		assetTypes[len(assetTypes)-1].Records = append(assetTypes[len(assetTypes)-1].Records, model.GetRecordData{
+			Id:            record.Id,
+			Name:          record.Asset.Name,
+			Broker:        record.Asset.Broker,
+			BoughtValue:   record.BoughtValue,
+			CurrentValue:  record.CurrentValue,
+			RealizedValue: record.RealizedValue,
+			IsCash:        record.Asset.AssetType.IsCash,
+			Note:          record.Note.String,
+		})
 	}
 
 	return model.GetRecordResponse{

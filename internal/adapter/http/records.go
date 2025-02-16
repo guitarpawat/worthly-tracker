@@ -33,7 +33,6 @@ func (h *RecordHandler) GetRecordsByDate(ctx echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot parse input date: %w", err))
 		}
 	}
-
 	resp, err := h.service.GetByDate(ctx.Request().Context(), d)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -45,7 +44,7 @@ func (h *RecordHandler) GetRecordsByDate(ctx echo.Context) error {
 func (h *RecordHandler) GetPartialRecordsByDate(ctx echo.Context) error {
 	var d date.Date
 	var err error
-	dateParam := ctx.Param("date")
+	dateParam := ctx.QueryParam("date")
 	if dateParam == "" {
 		d = date.Zero
 	} else {

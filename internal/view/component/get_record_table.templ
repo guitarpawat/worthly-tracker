@@ -3,9 +3,10 @@ package component
 import "github.com/guitarpawat/worthly-tracker/internal/model"
 import "github.com/guitarpawat/worthly-tracker/utility/format"
 import "github.com/shopspring/decimal"
+import "time"
 
 templ GetRecordTable(data model.GetRecordResponse) {
-    <div id="get-record-table">
+    <div class="container" id="get-record-table">
         @getRecordTableDateSelector(data.Dates)
         <table class="table table-bordered table-hover text-nowrap">
             <thead class="table-secondary table-group-divider sticky-top">
@@ -30,49 +31,47 @@ templ GetRecordTable(data model.GetRecordResponse) {
 }
 
 templ getRecordTableDateSelector(data model.DateResult) {
-    <div class="container">
-        <div class="row">
-            <div class="col-auto">
-                <a href="/add" class="btn btn-success bg-gradient">Add New Record</a>
-            </div>
-            <div class="col-auto">
-                <a class="btn btn-warning bg-gradient" href="/edit">Edit Record</a>
-            </div>
-            <div class="col-auto">
-                <p class="btn btn-danger bg-gradient">Delete Record</p>
-            </div>
-            <div class="col-auto ms-auto">
-                if len(data.PastDate) == 0 {
-                    <button class="btn btn-outline-secondary" disabled>&lt; Prev</button>
-                } else {
-                    <button class="btn btn-outline-secondary"
-                        hx-get={"/records/partial/summary_table/" + data.PastDate[len(data.PastDate) - 1].FormatISO(4)}
-                        hx-target="#get-record-table">&lt; Prev</button>
+    <div class="row">
+        <div class="col-auto">
+            <a href="/add" class="btn btn-success bg-gradient">Add New Record</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-warning bg-gradient" href="/edit">Edit Record</a>
+        </div>
+        <div class="col-auto">
+            <p class="btn btn-danger bg-gradient">Delete Record</p>
+        </div>
+        <div class="col-auto ms-auto">
+            if len(data.PastDate) == 0 {
+                <button class="btn btn-outline-secondary" disabled>&lt; Prev</button>
+            } else {
+                <button class="btn btn-outline-secondary"
+                    hx-get={"/records/partial/summary_table?date=" + data.PastDate[len(data.PastDate) - 1].Format(time.DateOnly)}
+                    hx-target="#get-record-table">&lt; Prev</button>
+            }
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="date-selector" name="date" hx-get="/records/partial/summary_table" hx-target="#get-record-table">
+                for _, date := range data.PastDate {
+                    <option value={date.Format(time.DateOnly)}>{date.Format(time.DateOnly)}</option>
                 }
-            </div>
-            <div class="col-auto">
-                <select class="form-select" id="date-selector" name="date" hx-get="/api/web/component/get_record_table" hx-target="#get-record-table">
-                    for _, date := range data.PastDate {
-                        <option value="{date}">{date.FormatISO(4)}</option>
-                    }
-                    <option value="{date}" selected="selected">{data.CurrentDate.FormatISO(4)}</option>
-                    for _, date := range data.FutureDate {
-                        <option value="{date}">{date.FormatISO(4)}</option>
-                    }
-                </select>
-            </div>
-            <div class="col-auto">
-                if len(data.FutureDate) == 0 {
-                    <button class="btn btn-outline-secondary" disabled>Next &gt;</button>
-                } else {
-                    <button class="btn btn-outline-secondary"
-                        hx-get={"/records/partial/summary_table/" + data.PastDate[len(data.PastDate) - 1].FormatISO(4)}
-                        hx-target="#get-record-table">Next &gt;</button>
+                <option value=date.Format(time.DateOnly) selected="selected">{data.CurrentDate.Format(time.DateOnly)}</option>
+                for _, date := range data.FutureDate {
+                    <option value={date.Format(time.DateOnly)}>{date.Format(time.DateOnly)}</option>
                 }
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-outline-primary bg-gradient" hx-get="/api/web/component/get_record_table" hx-target="#get-record-table">Latest</button>
-            </div>
+            </select>
+        </div>
+        <div class="col-auto">
+            if len(data.FutureDate) == 0 {
+                <button class="btn btn-outline-secondary" disabled>Next &gt;</button>
+            } else {
+                <button class="btn btn-outline-secondary"
+                    hx-get={"/records/partial/summary_table?date=" + data.FutureDate[0].Format(time.DateOnly)}
+                    hx-target="#get-record-table">Next &gt;</button>
+            }
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-outline-primary bg-gradient" hx-get="/api/web/component/get_record_table" hx-target="#get-record-table">Latest</button>
         </div>
     </div>
 }
@@ -87,17 +86,33 @@ templ getRecordTableAssetType(data model.GetRecordAssetType) {
     }
 }
 
-templ GetRecordTableRow(data model.Record) {
+templ GetRecordTableRow(data model.GetRecordData) {
     <tr>
-        <th class="text-start" scope="row">{data.Asset.Name}</th>
-            <td class="text-start">{data.Asset.Broker}</td>
+        <th class="text-start" scope="row">{data.Name}</th>
+        if data.IsCash {
+            <td class="text-start">{data.Broker}</td>
+            <td class="text-end"></td>
+            <td class="text-end">{format.DecimalToMoney(data.CurrentValue)}</td>
+            <td class="text-end"></td>
+            <td class="text-end"></td>
+            <td class="text-end"></td>
+            <td class="text-end"></td>
+            <td class="text-start">{data.Note}</td>
+        } else {
+            <td class="text-start">{data.Broker}</td>
             <td class="text-end">{format.DecimalToMoney(data.BoughtValue)}</td>
             <td class="text-end">{format.DecimalToMoney(data.CurrentValue)}</td>
             <td class="text-end">{format.DecimalToMoney(getProfit(data.BoughtValue, data.CurrentValue))}</td>
             <td class="text-end">{format.Percent(getProfitPercent(data.BoughtValue, data.CurrentValue))}</td>
-            <td class="text-end">{format.DecimalToMoney(data.RealizedValue)}</td>
+            if data.RealizedValue.IsZero() {
+                <td class="text-end"></td>
+            } else {
+                <td class="text-end">{format.DecimalToMoney(data.RealizedValue)}</td>
+            }
             <td class="text-end">{format.Percent(getProfitPercent(data.BoughtValue, data.CurrentValue.Add(data.RealizedValue)))}</td>
-            <td class="text-start">{data.Note.String}</td>
+            <td class="text-start">{data.Note}</td>
+        }
+
     </tr>
 }
 
@@ -141,6 +156,9 @@ func getProfit(bought, current decimal.Decimal) decimal.Decimal {
 }
 
 func getProfitPercent(bought, current decimal.Decimal) decimal.Decimal {
+    if bought.IsZero() {
+        return decimal.Zero
+    }
     return getProfit(bought, current).Div(bought).Mul(hundred)
 }
 
@@ -151,7 +169,7 @@ func calculateTableSummary(data model.GetRecordResponse) GetRecordTableSummaryMo
     cashValue := decimal.Zero
     for _, assetType := range data.AssetTypes {
         for _, record := range assetType.Records {
-            if !record.Asset.AssetType.IsCash {
+            if record.IsCash {
                 cashValue = cashValue.Add(record.CurrentValue)
             } else {
                 investmentBoughtValue = investmentBoughtValue.Add(record.BoughtValue)

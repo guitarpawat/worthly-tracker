@@ -57,7 +57,12 @@ func (r *Router) registerMiddleWare() {
 		},
 	}))
 
-	r.e.Use(middleware.Recover())
+	r.e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		LogErrorFunc: func(c echo.Context, err error, stack []byte) error {
+			logs.Log().Errorf("RECOVER: error: %v\nStack: %s", err, string(stack))
+			return err
+		},
+	}))
 }
 
 func (r *Router) registerStaticContent() {
