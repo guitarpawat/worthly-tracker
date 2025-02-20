@@ -1,0 +1,21 @@
+package component
+
+import "net/http"
+import "strconv"
+
+templ Error(httpStatus int, closable bool, err error) {
+    {{
+    if httpStatus == 0 {
+        httpStatus = http.StatusInternalServerError
+    }
+    }}
+
+    <div id="error-info" class="container">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            Error with http status {strconv.Itoa(httpStatus)}: {err.Error()}
+            if closable {
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            }
+        </div>
+    </div>
+}

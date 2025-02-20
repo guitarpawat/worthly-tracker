@@ -3,11 +3,11 @@ package page
 import "github.com/guitarpawat/worthly-tracker/internal/model"
 import "github.com/guitarpawat/worthly-tracker/internal/view/component"
 
-templ GetRecord(data model.GetRecordResponse) {
+templ GetRecord(data model.GetRecordTableView) {
     <!DOCTYPE html>
     <html>
         @getPageHead("Worthly Tracker: Records")
-        <body>
+        <body hx-ext={getHxExt()}>
         @component.Header("getRecord")
         @component.GetRecordTable(data)
         </body>

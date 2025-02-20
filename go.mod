@@ -4,7 +4,7 @@ go 1.23.5
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/a-h/templ v0.3.819
+	github.com/a-h/templ v0.3.833
 	github.com/apsdehal/go-logger v0.0.0-20190515212710-b0d6ccfee0e6
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-playground/validator/v10 v10.24.0
@@ -13,6 +13,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/leekchan/accounting v1.0.0
 	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/pkg/errors v0.9.1
 	github.com/rickb777/date/v2 v2.1.6
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/cobra v1.8.1
@@ -58,14 +59,12 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rickb777/period v1.0.7 // indirect
 	github.com/rickb777/plural v1.4.2 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/samber/lo v1.49.1 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect

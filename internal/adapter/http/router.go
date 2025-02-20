@@ -1,12 +1,17 @@
 package http
 
 import (
+	"errors"
 	"fmt"
 	"github.com/a-h/templ"
+	"github.com/guitarpawat/worthly-tracker/internal/constant"
+	"github.com/guitarpawat/worthly-tracker/internal/view/component"
+	"github.com/guitarpawat/worthly-tracker/internal/view/page"
 	"github.com/guitarpawat/worthly-tracker/resource"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"net/http"
 )
 
 type RouterConfig struct {
@@ -62,6 +67,35 @@ func (r *Router) registerMiddleWare() {
 			return err
 		},
 	}))
+
+	r.e.HTTPErrorHandler = func(err error, c echo.Context) {
+		var finalErr error
+		var finalHttpCode int
+		httpErr := new(echo.HTTPError)
+		if errors.As(err, &httpErr) {
+			if httpErr.Internal == nil {
+				finalErr = fmt.Errorf("%v", httpErr.Message)
+			} else {
+				finalErr = httpErr.Internal
+			}
+			finalHttpCode = httpErr.Code
+		} else {
+			finalErr = err
+			finalHttpCode = http.StatusInternalServerError
+		}
+
+		if c.Request().Header.Get(constant.HeaderKeyHtmxRequest) == constant.HeaderValueHtmxRequest {
+			c.Response().Header().Set(constant.HeaderKeyHtmxRetarget, "#page-header")
+			c.Response().Header().Set(constant.HeaderKeyHtmxReswap, "afterend")
+			err = render(c, finalHttpCode, component.Error(finalHttpCode, true, finalErr))
+		} else {
+			err = render(c, finalHttpCode, page.Error(finalHttpCode, finalErr))
+		}
+
+		if err != nil {
+			logs.Log().Errorf("cannot render error page: error: %v", err)
+		}
+	}
 }
 
 func (r *Router) registerStaticContent() {

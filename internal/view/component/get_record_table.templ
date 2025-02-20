@@ -5,7 +5,7 @@ import "github.com/guitarpawat/worthly-tracker/utility/format"
 import "github.com/shopspring/decimal"
 import "time"
 
-templ GetRecordTable(data model.GetRecordResponse) {
+templ GetRecordTable(data model.GetRecordTableView) {
     <div class="container" id="get-record-table">
         @getRecordTableDateSelector(data.Dates)
         <table class="table table-bordered table-hover text-nowrap">
@@ -78,7 +78,7 @@ templ getRecordTableDateSelector(data model.DateResult) {
     </div>
 }
 
-templ getRecordTableAssetType(data model.GetRecordAssetType) {
+templ getRecordTableAssetType(data model.RecordTableViewAssetType) {
     <tr class="table-light">
         <th class="text-center border-end-0" colspan="8" scope="row">{data.Name}</th>
         <td class="text-start border-start-0"></td>
@@ -88,7 +88,7 @@ templ getRecordTableAssetType(data model.GetRecordAssetType) {
     }
 }
 
-templ GetRecordTableRow(data model.GetRecordData) {
+templ GetRecordTableRow(data model.RecordTableViewData) {
     <tr>
         <th class="text-start" scope="row">{data.Name}</th>
         if data.IsCash {
@@ -164,7 +164,7 @@ func getProfitPercent(bought, current decimal.Decimal) decimal.Decimal {
     return getProfit(bought, current).Div(bought).Mul(hundred)
 }
 
-func calculateTableSummary(data model.GetRecordResponse) GetRecordTableSummaryModel {
+func calculateTableSummary(data model.GetRecordTableView) GetRecordTableSummaryModel {
     investmentBoughtValue := decimal.Zero
     investmentCurrentValue := decimal.Zero
     investmentRealizedValue := decimal.Zero

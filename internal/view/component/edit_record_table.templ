@@ -1,0 +1,102 @@
+package component
+
+import (
+    "github.com/guitarpawat/worthly-tracker/internal/model"
+	"time"
+	"github.com/shopspring/decimal"
+	"strconv"
+	"fmt"
+)
+
+templ EditRecordTable(data model.EditRecordTableView) {
+    <script type="module" src="/js/edit_record.js"></script>
+	<div class="container">
+        <h2 id="record-action">{string(data.Action)}</h2>
+        <div class="row mt-3">
+            <div class="col-auto">
+                <h4>Record Date: </h4>
+            </div>
+            <div class="col-auto">
+                <h4 id="shown-date">{data.Date.Format(time.DateOnly)}</h4>
+            </div>
+            <div class="col-auto">
+                <input id="date" type="date" style="visibility: hidden; position: absolute;">
+                <button id="change-date" class="btn btn-outline-secondary btn-sm">Change</button>
+            </div>
+        </div>
+        <div class="container mt-3">
+            <table class="table table-bordered table-hover text-nowrap" id="record-table">
+                <thead class="table-secondary table-group-divider sticky-top">
+                <tr>
+                    <th class="text-center fs-6" scope="col">Name</th>
+                    <th class="text-center fs-6" scope="col">Place</th>
+                    <th class="text-center fs-6" scope="col">AI</th>
+                    <th class="text-center fs-6" scope="col">Bought Value</th>
+                    <th class="text-center fs-6" scope="col">Current Value</th>
+                    <th class="text-center fs-6" scope="col">UR %</th>
+                    <th class="text-center fs-6" scope="col">Realized Value</th>
+                    <th class="text-center fs-6" scope="col">Note</th>
+                </tr>
+                </thead>
+                for _, assetType := range data.AssetTypes {
+                    @editRecordTableAssetType(assetType)
+                }
+            </table>
+            <div class="text-center">
+                <p class="btn btn-success btn-lg" id="save-btn">&nbsp;Save&nbsp;</p>
+            </div>
+        </div>
+    </div>
+}
+
+templ editRecordTableAssetType(data model.RecordTableViewAssetType) {
+	<tbody>
+	    <tr class="table-light">
+	        <th class="text-center fs-6" colspan="8">{data.Name}</th>
+	    </tr>
+        for _, record := range data.Records {
+            @editRecordTableRecord(record)
+        }
+    </tbody>
+}
+
+templ editRecordTableRecord(data model.RecordTableViewData) {
+	<tr>
+        <th class="text-start fs-6" scope="row">{data.Name}</th>
+        <td class="text-start fs-6">{data.Broker}</td>
+        if data.DefaultIncrement.IsZero() {
+            <td class="text-center fs-6"></td>
+        } else {
+            <td class="text-center fs-6">✔</td>
+        }
+
+        {{
+        boughtId := strconv.Itoa(data.Id)+"-bought"
+        currentId := strconv.Itoa(data.Id)+"-current"
+        profitId := strconv.Itoa(data.Id)+"-profit"
+        realizeId := strconv.Itoa(data.Id)+"-realize"
+        }}
+
+        if data.IsCash {
+            <td><input type="number" step="0.01" class="fs-6 text-end" disabled=""></td>
+            <td><input id={currentId} hx-on:change={templ.JSFuncCall("formatDecimalInput", currentId)} type="number" step="0.01" class="fs-6 text-end">{addIncrement(data.CurrentValue, data.DefaultIncrement).StringFixedBank(2)}</td>
+            <td class="fs-6 text-end"></td>
+            <td><input type="number" step="0.01" class="fs-6 text-end" disabled=""></td>
+        } else {
+            <td><input id={boughtId} hx-on:click={templ.JSFuncCall("enableField", boughtId)} hx-on:change={templ.JSFuncCall("formatDecimalInput", boughtId)} type="number" step="0.01" class="fs-6 text-end" disabled="">{data.BoughtValue.StringFixedBank(2)}</td>
+            <td><input id={currentId} hx-on:change={templ.JSFuncCall("formatDecimalInput", currentId)} hx-on:change={templ.JSFuncCall("calculatePercent", data.Id)} type="number" step="0.01" class="fs-6 text-end">{addIncrement(data.CurrentValue, data.DefaultIncrement).StringFixedBank(2)}</td>
+            <td id={profitId} class="fs-6 text-end"></td>
+            <td><input id={realizeId} hx-on:click={templ.JSFuncCall("enableField", realizeId)} hx-on:change={templ.JSFuncCall("formatDecimalInput", realizeId)} type="number" step="0.01" class="fs-6 text-end" hx-on:click={templ.JSFuncCall("enableField", strconv.Itoa(data.Id)+"-bought")} disabled="">{data.RealizedValue.StringFixedBank(2)}</td>
+        }
+
+        <td><input type="text" class="fs-6 text-start" disabled=""></td>
+    </tr>
+}
+
+func enableFieldScirpt(id string) string {
+    return fmt.Sprintf("enableField('%s')", id)
+}
+
+func addIncrement(a, b decimal.Decimal) decimal.Decimal {
+    return a.Add(b)
+}
