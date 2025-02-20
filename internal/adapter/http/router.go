@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/a-h/templ"
@@ -44,6 +45,10 @@ func (r *Router) init() {
 
 func (r *Router) Start() error {
 	return r.e.Start(fmt.Sprintf("0.0.0.0:%d", r.cfg.Port))
+}
+
+func (r *Router) Close() error {
+	return r.e.Shutdown(context.Background())
 }
 
 func (r *Router) registerMiddleWare() {
