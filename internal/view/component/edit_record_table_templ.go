@@ -187,15 +187,15 @@ func editRecordTableRecord(data model.RecordTableViewData, idx int) templ.Compon
 			}
 		}
 
-		assetIdName := fmt.Sprintf("Record['%d'][AssetId]", idx)
+		assetIdName := fmt.Sprintf("Record[%d][AssetId]", idx)
 		boughtId := strconv.Itoa(idx) + "-bought"
-		boughtName := fmt.Sprintf("Record['%d'][BoughtValue]", idx)
+		boughtName := fmt.Sprintf("Record[%d][BoughtValue]", idx)
 		currentId := strconv.Itoa(idx) + "-current"
-		currentName := fmt.Sprintf("Record['%d'][CurrentValue]", idx)
+		currentName := fmt.Sprintf("Record[%d][CurrentValue]", idx)
 		profitId := strconv.Itoa(idx) + "-profit"
 		realizeId := strconv.Itoa(idx) + "-realize"
-		relaizeName := fmt.Sprintf("Record['%d'][RealizedValue]", idx)
-		noteName := fmt.Sprintf("Record['%d'][Note]", idx)
+		relaizeName := fmt.Sprintf("Record[%d][RealizedValue]", idx)
+		noteName := fmt.Sprintf("Record[%d][Note]", idx)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<input name=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

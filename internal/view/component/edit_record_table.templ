@@ -70,15 +70,15 @@ templ editRecordTableRecord(data model.RecordTableViewData, idx int) {
         }
 
         {{
-        assetIdName := fmt.Sprintf("Record['%d'][AssetId]", idx)
+        assetIdName := fmt.Sprintf("Record[%d][AssetId]", idx)
         boughtId := strconv.Itoa(idx)+"-bought"
-        boughtName := fmt.Sprintf("Record['%d'][BoughtValue]", idx)
+        boughtName := fmt.Sprintf("Record[%d][BoughtValue]", idx)
         currentId := strconv.Itoa(idx)+"-current"
-        currentName := fmt.Sprintf("Record['%d'][CurrentValue]", idx)
+        currentName := fmt.Sprintf("Record[%d][CurrentValue]", idx)
         profitId := strconv.Itoa(idx)+"-profit"
         realizeId := strconv.Itoa(idx)+"-realize"
-        relaizeName := fmt.Sprintf("Record['%d'][RealizedValue]", idx)
-        noteName := fmt.Sprintf("Record['%d'][Note]", idx)
+        relaizeName := fmt.Sprintf("Record[%d][RealizedValue]", idx)
+        noteName := fmt.Sprintf("Record[%d][Note]", idx)
         }}
 
         <input name={assetIdName} type="hidden" value={strconv.Itoa(data.AssetId)}>
