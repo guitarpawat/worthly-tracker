@@ -5,3 +5,13 @@ input[disabled] {
 worthly-header * {
     z-index: 100000;
 }
+
+.container{
+    max-width: 1440px;
+}
+
+@media (max-width: 1440px) {
+    .container{
+        max-width: 100%;
+    }
+}

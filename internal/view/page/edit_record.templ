@@ -1,0 +1,15 @@
+package page
+
+import "github.com/guitarpawat/worthly-tracker/internal/model"
+import "github.com/guitarpawat/worthly-tracker/internal/view/component"
+
+templ EditRecord(data model.EditRecordTableView) {
+    <!DOCTYPE html>
+    <html>
+        @getPageHead("Worthly Tracker: " + string(data.Action))
+        <body hx-ext={getHxExt()}>
+        @component.Header("editRecord")
+        @component.EditRecordTable(data)
+        </body>
+    </html>
+}

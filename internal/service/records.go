@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/guitarpawat/worthly-tracker/internal/adapter/db"
+	"github.com/guitarpawat/worthly-tracker/internal/constant"
 	"github.com/guitarpawat/worthly-tracker/internal/model"
 	"github.com/rickb777/date/v2"
 )
@@ -49,6 +50,7 @@ func (r *Records) GetByDate(ctx context.Context, d date.Date) (model.GetRecordTa
 		}
 		assetTypes[len(assetTypes)-1].Records = append(assetTypes[len(assetTypes)-1].Records, model.RecordTableViewData{
 			Id:               record.Id,
+			AssetId:          record.AssetId,
 			Name:             record.Asset.Name,
 			Broker:           record.Asset.Broker,
 			BoughtValue:      record.BoughtValue,
@@ -63,5 +65,41 @@ func (r *Records) GetByDate(ctx context.Context, d date.Date) (model.GetRecordTa
 	return model.GetRecordTableView{
 		Dates:      dateList,
 		AssetTypes: assetTypes,
+	}, nil
+}
+
+func (r *Records) GetDraft(ctx context.Context) (model.EditRecordTableView, error) {
+	records, err := r.repo.FindForDraft(ctx)
+	if err != nil {
+		return model.EditRecordTableView{}, fmt.Errorf("cannot get record draft: %w", err)
+	}
+
+	var assetTypes []model.RecordTableViewAssetType
+	for idx, record := range records {
+		if idx == 0 || assetTypes[len(assetTypes)-1].Id != record.Asset.AssetType.Id {
+			assetTypes = append(assetTypes, model.RecordTableViewAssetType{
+				Id:      record.Asset.AssetType.Id,
+				Name:    record.Asset.AssetType.Name,
+				Records: make([]model.RecordTableViewData, 0),
+			})
+		}
+		assetTypes[len(assetTypes)-1].Records = append(assetTypes[len(assetTypes)-1].Records, model.RecordTableViewData{
+			Id:               record.Id,
+			AssetId:          record.AssetId,
+			Name:             record.Asset.Name,
+			Broker:           record.Asset.Broker,
+			BoughtValue:      record.BoughtValue,
+			CurrentValue:     record.CurrentValue,
+			RealizedValue:    record.RealizedValue,
+			DefaultIncrement: record.Asset.DefaultIncrement,
+			IsCash:           record.Asset.AssetType.IsCash,
+			Note:             record.Note.String,
+		})
+	}
+
+	return model.EditRecordTableView{
+		AssetTypes: assetTypes,
+		Date:       date.Today(),
+		Action:     constant.EditActionNew,
 	}, nil
 }

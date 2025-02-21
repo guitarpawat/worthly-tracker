@@ -105,7 +105,7 @@ func Header(pageName string) templ.Component {
 
 var subPageMap = map[string]string{
 	"getRecord":         "records",
-	"postRecord":        "records",
+	"editRecord":        "records",
 	"reportByDate":      "reports",
 	"reportNetWorth":    "reports",
 	"assetTypeSetting":  "settings",

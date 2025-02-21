@@ -26,6 +26,7 @@ type RecordTableViewAssetType struct {
 
 type RecordTableViewData struct {
 	Id               int
+	AssetId          int
 	Name             string
 	Broker           string
 	BoughtValue      decimal.Decimal

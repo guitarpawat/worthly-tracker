@@ -50,7 +50,11 @@ export function formatDecimal(val) {
     if(val !== 0 && !val) {
         return ''
     }
-    return fixedDecimalFormatter.format(val).trim().replaceAll(',', '')
+
+    if(!/^[\d.,\s]+$/.test(val)) {
+        return ''
+    }
+    return fixedDecimalFormatter.format(val.trim()).replaceAll(',', '')
 }
 
 export function formatDateAsFrontend(date) {

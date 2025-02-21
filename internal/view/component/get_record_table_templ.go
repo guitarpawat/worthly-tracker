@@ -85,7 +85,7 @@ func getRecordTableDateSelector(data model.DateResult) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"row\"><div class=\"col-auto\"><a href=\"/add\" class=\"btn btn-success bg-gradient\">Add New Record</a></div><div class=\"col-auto\"><a class=\"btn btn-warning bg-gradient\" href=\"/edit\">Edit Record</a></div><div class=\"col-auto\"><p class=\"btn btn-danger bg-gradient\">Delete Record</p></div><div class=\"col-auto ms-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"row\"><div class=\"col-auto\"><a href=\"/records/new\" class=\"btn btn-success bg-gradient\">Add New Record</a></div><div class=\"col-auto\"><a class=\"btn btn-warning bg-gradient\" href=\"/records/edit\">Edit Record</a></div><div class=\"col-auto\"><p class=\"btn btn-danger bg-gradient\">Delete Record</p></div><div class=\"col-auto ms-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

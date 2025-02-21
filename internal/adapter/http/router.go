@@ -110,6 +110,10 @@ func (r *Router) registerStaticContent() {
 func (r *Router) registerRecordsRoutes() {
 	r.e.GET("/", r.recordsHandler.GetRecordsByDate)
 	r.e.GET("/records", r.recordsHandler.GetRecordsByDate)
+	r.e.GET("/records/new", r.recordsHandler.GetRecordsForDraft)
+	r.e.GET("/records/edit", r.recordsHandler.GetRecordsForEdit)
+	r.e.POST("/records", r.recordsHandler.CreateRecord)
+	r.e.PUT("/records", r.recordsHandler.UpdateRecord)
 }
 
 func render(ctx echo.Context, status int, t templ.Component) error {

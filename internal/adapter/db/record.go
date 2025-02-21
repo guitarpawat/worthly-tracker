@@ -34,9 +34,9 @@ func (r *RecordsRepository) FindForDraft(ctx context.Context) (res []model.Recor
 	}
 
 	where := map[string]any{
-		"Date":                     latest,
-		"Asset.IsActive":           true,
-		"Asset.AssetType.IsActive": true,
+		"Date":                       latest,
+		"Asset.is_active":            true,
+		"Asset__AssetType.is_active": true,
 	}
 
 	err = r.db.WithContext(ctx).Joins("Asset").Joins("Asset.AssetType").Order("Asset__AssetType.Sequence, Asset.Sequence, records.Id").

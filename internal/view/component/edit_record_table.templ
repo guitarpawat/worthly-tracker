@@ -2,6 +2,7 @@ package component
 
 import (
     "github.com/guitarpawat/worthly-tracker/internal/model"
+    "github.com/guitarpawat/worthly-tracker/utility/format"
 	"time"
 	"github.com/shopspring/decimal"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 
 templ EditRecordTable(data model.EditRecordTableView) {
     <script type="module" src="/js/edit_record.js"></script>
-	<div class="container">
+	<div class="container" hx-ext="json-enc-custom" hx-include="this">
         <h2 id="record-action">{string(data.Action)}</h2>
         <div class="row mt-3">
             <div class="col-auto">
@@ -20,11 +21,11 @@ templ EditRecordTable(data model.EditRecordTableView) {
                 <h4 id="shown-date">{data.Date.Format(time.DateOnly)}</h4>
             </div>
             <div class="col-auto">
-                <input id="date" type="date" style="visibility: hidden; position: absolute;">
+                <input id="date" type="date" name="Date" style="visibility: hidden; position: absolute;" value={data.Date.Format(time.DateOnly)} autocomplete="off">
                 <button id="change-date" class="btn btn-outline-secondary btn-sm">Change</button>
             </div>
         </div>
-        <div class="container mt-3">
+        <div class="mt-3">
             <table class="table table-bordered table-hover text-nowrap" id="record-table">
                 <thead class="table-secondary table-group-divider sticky-top">
                 <tr>
@@ -38,29 +39,27 @@ templ EditRecordTable(data model.EditRecordTableView) {
                     <th class="text-center fs-6" scope="col">Note</th>
                 </tr>
                 </thead>
+                {{idx := 0}}
                 for _, assetType := range data.AssetTypes {
-                    @editRecordTableAssetType(assetType)
+                    <tbody>
+                    	    <tr class="table-light">
+                    	        <th class="text-center fs-6" colspan="8">{assetType.Name}</th>
+                    	    </tr>
+                            for _, record := range assetType.Records {
+                                @editRecordTableRecord(record, idx)
+                                {{idx++}}
+                            }
+                    </tbody>
                 }
             </table>
             <div class="text-center">
-                <p class="btn btn-success btn-lg" id="save-btn">&nbsp;Save&nbsp;</p>
+                <p class="btn btn-success btn-lg" id="save-btn" hx-post="/records">&nbsp;Save&nbsp;</p>
             </div>
         </div>
     </div>
 }
 
-templ editRecordTableAssetType(data model.RecordTableViewAssetType) {
-	<tbody>
-	    <tr class="table-light">
-	        <th class="text-center fs-6" colspan="8">{data.Name}</th>
-	    </tr>
-        for _, record := range data.Records {
-            @editRecordTableRecord(record)
-        }
-    </tbody>
-}
-
-templ editRecordTableRecord(data model.RecordTableViewData) {
+templ editRecordTableRecord(data model.RecordTableViewData, idx int) {
 	<tr>
         <th class="text-start fs-6" scope="row">{data.Name}</th>
         <td class="text-start fs-6">{data.Broker}</td>
@@ -71,25 +70,38 @@ templ editRecordTableRecord(data model.RecordTableViewData) {
         }
 
         {{
-        boughtId := strconv.Itoa(data.Id)+"-bought"
-        currentId := strconv.Itoa(data.Id)+"-current"
-        profitId := strconv.Itoa(data.Id)+"-profit"
-        realizeId := strconv.Itoa(data.Id)+"-realize"
+        assetIdName := fmt.Sprintf("Record['%d'][AssetId]", idx)
+        boughtId := strconv.Itoa(idx)+"-bought"
+        boughtName := fmt.Sprintf("Record['%d'][BoughtValue]", idx)
+        currentId := strconv.Itoa(idx)+"-current"
+        currentName := fmt.Sprintf("Record['%d'][CurrentValue]", idx)
+        profitId := strconv.Itoa(idx)+"-profit"
+        realizeId := strconv.Itoa(idx)+"-realize"
+        relaizeName := fmt.Sprintf("Record['%d'][RealizedValue]", idx)
+        noteName := fmt.Sprintf("Record['%d'][Note]", idx)
         }}
 
+        <input name={assetIdName} type="hidden" value={strconv.Itoa(data.AssetId)}>
         if data.IsCash {
-            <td><input type="number" step="0.01" class="fs-6 text-end" disabled=""></td>
-            <td><input id={currentId} hx-on:change={templ.JSFuncCall("formatDecimalInput", currentId)} type="number" step="0.01" class="fs-6 text-end">{addIncrement(data.CurrentValue, data.DefaultIncrement).StringFixedBank(2)}</td>
+            <td><input type="number" step="0.01" class="fs-6 text-end" readonly="readonly"></td>
+            <td>
+                <input id={currentId} name={currentName} class="fs-6 text-end data-format-decimal" type="number" step="0.01" class="fs-6 text-end" value={addIncrement(data.CurrentValue, data.DefaultIncrement).StringFixedBank(2)} autocomplete="off">
+            </td>
             <td class="fs-6 text-end"></td>
-            <td><input type="number" step="0.01" class="fs-6 text-end" disabled=""></td>
+            <td><input type="number" step="0.01" class="fs-6 text-end" readonly="readonly"></td>
         } else {
-            <td><input id={boughtId} hx-on:click={templ.JSFuncCall("enableField", boughtId)} hx-on:change={templ.JSFuncCall("formatDecimalInput", boughtId)} type="number" step="0.01" class="fs-6 text-end" disabled="">{data.BoughtValue.StringFixedBank(2)}</td>
-            <td><input id={currentId} hx-on:change={templ.JSFuncCall("formatDecimalInput", currentId)} hx-on:change={templ.JSFuncCall("calculatePercent", data.Id)} type="number" step="0.01" class="fs-6 text-end">{addIncrement(data.CurrentValue, data.DefaultIncrement).StringFixedBank(2)}</td>
-            <td id={profitId} class="fs-6 text-end"></td>
-            <td><input id={realizeId} hx-on:click={templ.JSFuncCall("enableField", realizeId)} hx-on:change={templ.JSFuncCall("formatDecimalInput", realizeId)} type="number" step="0.01" class="fs-6 text-end" hx-on:click={templ.JSFuncCall("enableField", strconv.Itoa(data.Id)+"-bought")} disabled="">{data.RealizedValue.StringFixedBank(2)}</td>
+            <td class="data-enable-on-click">
+                <input id={boughtId} name={boughtName} class="fs-6 text-end data-recalculate-profit data-format-decimal" type="number" type="number" step="0.01" value={addIncrement(data.BoughtValue, data.DefaultIncrement).StringFixedBank(2)} autocomplete="off" readonly="readonly">
+            </td>
+            <td>
+                <input id={currentId} name={currentName} class="fs-6 text-end data-recalculate-profit data-format-decimal" type="number" type="number" step="0.01" value={data.CurrentValue.StringFixedBank(2)} autocomplete="off">
+            </td>
+            <td id={profitId} class="fs-6 text-end">{format.Percent(getProfitPercent(addIncrement(data.BoughtValue, data.DefaultIncrement), data.CurrentValue))}</td>
+            <td class="data-enable-on-click">
+                <input id={realizeId} name={relaizeName} class="fs-6 text-end data-format-decimal" type="number" type="number" step="0.01" value={data.RealizedValue.StringFixedBank(2)} autocomplete="off" readonly="readonly">
+            </td>
         }
-
-        <td><input type="text" class="fs-6 text-start" disabled=""></td>
+        <td><input name={noteName} type="text" class="fs-6 text-start" readonly="readonly"></td>
     </tr>
 }
 

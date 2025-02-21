@@ -1,17 +1,40 @@
-import * as formatter from './formatter'
+import * as formatter from './formatter.js'
 
-function enableField(htmlId) {
-    document.getElementById(htmlId).disabled = false
-}
+window.onload = function () {
+    Array.from(document.getElementsByClassName('data-enable-on-click')).forEach(e => {
+        e.onclick = function() {
+            Array.from(e.children).forEach(c => {
+                c.disabled = false
+                c.focus()
+            })
+        }
+    })
 
-export function formatDecimalInput(htmlId) {
-    document.getElementById(htmlId).innerText = formatter.formatDecimal(document.getElementById(htmlId).innerText)
-}
+    Array.from(document.getElementsByClassName('data-format-decimal')).forEach(e => {
+        e.onchange = function() {
+            e.value = formatter.formatDecimal(e.value)
 
-export function calculatePercent(assetId) {
-    let boughtValue = Number(formatter.formatDecimal(document.getElementById(assetId+"-bought").innerText))
-    let currentValue = Number(formatter.formatDecimal(document.getElementById(assetId+"-current").innerText))
-    document.getElementById(assetId+"-profit").innerText = formatter.formatPercent((currentValue - boughtValue) / boughtValue)
+            // we need to add here since when we create onchange event, it will replace the old one
+            if (e.classList.contains('data-recalculate-profit')) {
+                let id = e.id.replace('-bought', '').replace('-current', '')
+                let boughtId = id + '-bought'
+                let currentId = id + '-current'
+                let profitId = id + '-profit'
+
+                let boughtVal = Number(formatter.formatDecimal(document.getElementById(boughtId).value))
+                let currentVal = Number(formatter.formatDecimal(document.getElementById(currentId).value))
+                document.getElementById(profitId).innerText = formatter.formatPercent((currentVal - boughtVal) / boughtVal)
+            }
+        }
+    })
+
+    document.getElementById('change-date').onclick = function () {
+        document.getElementById('date').showPicker()
+    }
+
+    document.getElementById('date').onchange = function () {
+        document.getElementById('shown-date').innerText = document.getElementById('date').value
+    }
 }
 
 window.onbeforeunload = function (e) {
