@@ -4,7 +4,8 @@ window.onload = function () {
     Array.from(document.getElementsByClassName('data-enable-on-click')).forEach(e => {
         e.onclick = function() {
             Array.from(e.children).forEach(c => {
-                c.disabled = false
+                c.readOnly = false
+                c.onFocus = null
                 c.focus()
             })
         }
@@ -35,6 +36,16 @@ window.onload = function () {
     document.getElementById('date').onchange = function () {
         document.getElementById('shown-date').innerText = document.getElementById('date').value
     }
+
+    document.getElementById('save-btn').onclick = function () {
+        window.onbeforeunload = null
+    }
+
+    document.body.addEventListener("htmx:afterRequest", function (detail) {
+        if(detail.successful) {
+            window.onbeforeunload = null
+        }
+    })
 }
 
 window.onbeforeunload = function (e) {

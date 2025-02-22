@@ -2,11 +2,14 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/guitarpawat/worthly-tracker/internal/adapter/db"
 	"github.com/guitarpawat/worthly-tracker/internal/constant"
 	"github.com/guitarpawat/worthly-tracker/internal/model"
 	"github.com/rickb777/date/v2"
+	"github.com/samber/lo"
+	"strconv"
 )
 
 type Records struct {
@@ -84,7 +87,7 @@ func (r *Records) GetDraft(ctx context.Context) (model.EditRecordTableView, erro
 			})
 		}
 		assetTypes[len(assetTypes)-1].Records = append(assetTypes[len(assetTypes)-1].Records, model.RecordTableViewData{
-			Id:               record.Id,
+			Id:               0,
 			AssetId:          record.AssetId,
 			Name:             record.Asset.Name,
 			Broker:           record.Asset.Broker,
@@ -102,4 +105,96 @@ func (r *Records) GetDraft(ctx context.Context) (model.EditRecordTableView, erro
 		Date:       date.Today(),
 		Action:     constant.EditActionNew,
 	}, nil
+}
+
+func (r *Records) CreateRecords(ctx context.Context, req model.CreateRecordRequest) error {
+	records := lo.Map(req.Records, func(record model.CreateRecordRequestRecord, _ int) model.Record {
+		var note sql.NullString
+		if record.Note == "" {
+			note = sql.NullString{Valid: false}
+		} else {
+			note = sql.NullString{
+				String: record.Note,
+				Valid:  true,
+			}
+		}
+
+		assetId, _ := strconv.Atoi(record.AssetId) // Already validate request
+		return model.Record{
+			AssetId:       assetId,
+			Date:          req.Date,
+			BoughtValue:   record.BoughtValue,
+			CurrentValue:  record.CurrentValue,
+			RealizedValue: record.RealizedValue,
+			Note:          note,
+		}
+	})
+
+	repo, tx := r.repo.BeginTx(ctx)
+	defer tx.Rollback()
+
+	dateExists, err := repo.DateExists(ctx, req.Date)
+	if err != nil {
+		return fmt.Errorf("cannot check date exists: %w", err)
+	}
+	if dateExists {
+		return fmt.Errorf("date %s already exists", req.Date)
+	}
+
+	for _, record := range records {
+		err := repo.Upsert(ctx, record)
+		if err != nil {
+			return fmt.Errorf("cannot insert record: %w", err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("cannot commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (r *Records) UpdateRecords(ctx context.Context, req model.CreateRecordRequest) error {
+	records := lo.Map(req.Records, func(record model.CreateRecordRequestRecord, _ int) model.Record {
+		var note sql.NullString
+		if record.Note == "" {
+			note = sql.NullString{Valid: false}
+		} else {
+			note = sql.NullString{
+				String: record.Note,
+				Valid:  true,
+			}
+		}
+
+		assetId, _ := strconv.Atoi(record.AssetId)  // Already validate request
+		recordId, _ := strconv.Atoi(record.AssetId) // Already validate request
+		return model.Record{
+			Id:            recordId,
+			AssetId:       assetId,
+			Date:          req.Date,
+			BoughtValue:   record.BoughtValue,
+			CurrentValue:  record.CurrentValue,
+			RealizedValue: record.RealizedValue,
+			Note:          note,
+		}
+	})
+
+	repo, tx := r.repo.BeginTx(ctx)
+	defer tx.Rollback()
+
+	for _, record := range records {
+		err := repo.Upsert(ctx, record)
+		if err != nil {
+			return fmt.Errorf("cannot insert record: %w", err)
+		}
+	}
+
+	err := tx.Commit()
+	if err != nil {
+		return fmt.Errorf("cannot commit transaction: %w", err)
+	}
+
+	return nil
 }

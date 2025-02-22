@@ -6,4 +6,6 @@ const (
 
 	HeaderKeyHtmxReswap   = "HX-Reswap"
 	HeaderKeyHtmxRetarget = "HX-Retarget"
+	HeaderKeyHtmxRedirect = "HX-Redirect"
+	HeaderKeyHtmxRefresh  = "HX-Refresh"
 )

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/guitarpawat/worthly-tracker/internal/model"
+	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/pkg/errors"
 	"github.com/rickb777/date/v2"
 	"gorm.io/gorm"
@@ -46,7 +47,8 @@ func (r *RecordsRepository) FindForDraft(ctx context.Context) (res []model.Recor
 }
 
 func (r *RecordsRepository) Upsert(ctx context.Context, record model.Record) error {
-	return r.db.WithContext(ctx).Save(record).Error
+	logs.Log().Infof("upsert record: %+v", record)
+	return r.db.WithContext(ctx).Save(&record).Error
 }
 
 func (r *RecordsRepository) Delete(ctx context.Context, id int) error {
@@ -63,6 +65,12 @@ func (r *RecordsRepository) GetLatestDate(ctx context.Context) (res date.Date, e
 		return res, sql.ErrNoRows
 	}
 	return res, err
+}
+
+func (r *RecordsRepository) DateExists(ctx context.Context, current date.Date) (bool, error) {
+	var exists bool
+	err := r.db.WithContext(ctx).Table("records").Select("count(*) > 0").Where("Date = ?", current).Find(&exists).Error
+	return exists, err
 }
 
 func (r *RecordsRepository) FindPastAndFutureDate(ctx context.Context, current date.Date) (model.DateResult, error) {

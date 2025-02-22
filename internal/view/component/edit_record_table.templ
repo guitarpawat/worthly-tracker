@@ -70,38 +70,42 @@ templ editRecordTableRecord(data model.RecordTableViewData, idx int) {
         }
 
         {{
-        assetIdName := fmt.Sprintf("Record[%d][AssetId]", idx)
+        recordIdName := fmt.Sprintf("Records[%d][Id]", idx)
+        assetIdName := fmt.Sprintf("Records[%d][AssetId]", idx)
         boughtId := strconv.Itoa(idx)+"-bought"
-        boughtName := fmt.Sprintf("Record[%d][BoughtValue]", idx)
+        boughtName := fmt.Sprintf("Records[%d][BoughtValue]", idx)
         currentId := strconv.Itoa(idx)+"-current"
-        currentName := fmt.Sprintf("Record[%d][CurrentValue]", idx)
+        currentName := fmt.Sprintf("Records[%d][CurrentValue]", idx)
         profitId := strconv.Itoa(idx)+"-profit"
         realizeId := strconv.Itoa(idx)+"-realize"
-        relaizeName := fmt.Sprintf("Record[%d][RealizedValue]", idx)
-        noteName := fmt.Sprintf("Record[%d][Note]", idx)
+        relaizeName := fmt.Sprintf("Records[%d][RealizedValue]", idx)
+        noteName := fmt.Sprintf("Records[%d][Note]", idx)
         }}
 
+        if data.Id > 0 {
+            <input name={recordIdName} type="hidden" value={strconv.Itoa(data.Id)}>
+        }
         <input name={assetIdName} type="hidden" value={strconv.Itoa(data.AssetId)}>
         if data.IsCash {
-            <td><input type="number" step="0.01" class="fs-6 text-end" readonly="readonly"></td>
+            <td><input type="number" step="0.01" class="fs-6 text-end" tabindex="-1" readonly="readonly"></td>
             <td>
                 <input id={currentId} name={currentName} class="fs-6 text-end data-format-decimal" type="number" step="0.01" class="fs-6 text-end" value={addIncrement(data.CurrentValue, data.DefaultIncrement).StringFixedBank(2)} autocomplete="off">
             </td>
             <td class="fs-6 text-end"></td>
-            <td><input type="number" step="0.01" class="fs-6 text-end" readonly="readonly"></td>
+            <td><input type="number" step="0.01" class="fs-6 text-end" tabindex="-1" readonly="readonly"></td>
         } else {
             <td class="data-enable-on-click">
-                <input id={boughtId} name={boughtName} class="fs-6 text-end data-recalculate-profit data-format-decimal" type="number" type="number" step="0.01" value={addIncrement(data.BoughtValue, data.DefaultIncrement).StringFixedBank(2)} autocomplete="off" readonly="readonly">
+                <input id={boughtId} name={boughtName} class="fs-6 text-end data-recalculate-profit data-format-decimal" type="number" type="number" step="0.01" value={addIncrement(data.BoughtValue, data.DefaultIncrement).StringFixedBank(2)} autocomplete="off" tabindex="-1" readonly="readonly">
             </td>
             <td>
                 <input id={currentId} name={currentName} class="fs-6 text-end data-recalculate-profit data-format-decimal" type="number" type="number" step="0.01" value={data.CurrentValue.StringFixedBank(2)} autocomplete="off">
             </td>
             <td id={profitId} class="fs-6 text-end">{format.Percent(getProfitPercent(addIncrement(data.BoughtValue, data.DefaultIncrement), data.CurrentValue))}</td>
             <td class="data-enable-on-click">
-                <input id={realizeId} name={relaizeName} class="fs-6 text-end data-format-decimal" type="number" type="number" step="0.01" value={data.RealizedValue.StringFixedBank(2)} autocomplete="off" readonly="readonly">
+                <input id={realizeId} name={relaizeName} class="fs-6 text-end data-format-decimal" type="number" type="number" step="0.01" value={data.RealizedValue.StringFixedBank(2)} autocomplete="off" tabindex="-1" readonly="readonly">
             </td>
         }
-        <td><input name={noteName} type="text" class="fs-6 text-start" readonly="readonly"></td>
+        <td><input name={noteName} type="text" class="fs-6 text-start" tabindex="-1" readonly="readonly"></td>
     </tr>
 }
 
