@@ -60,7 +60,24 @@ func (h *RecordHandler) GetRecordsForDraft(ctx echo.Context) error {
 }
 
 func (h *RecordHandler) GetRecordsForEdit(ctx echo.Context) error {
-	return nil
+	var d date.Date
+	var err error
+	dateParam := ctx.QueryParam("date")
+	if dateParam == "" {
+		d = date.Zero
+	} else {
+		d, err = date.Parse(time.DateOnly, dateParam)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot parse input date: %w", err))
+		}
+	}
+
+	draft, err := h.service.GetByDateForEdit(ctx.Request().Context(), d)
+	if err != nil {
+		return err
+	}
+
+	return render(ctx, http.StatusOK, page.EditRecord(draft))
 }
 
 func (h *RecordHandler) CreateRecord(ctx echo.Context) error {
@@ -86,5 +103,23 @@ func (h *RecordHandler) CreateRecord(ctx echo.Context) error {
 }
 
 func (h *RecordHandler) UpdateRecord(ctx echo.Context) error {
-	return nil
+	var body model.UpdateRecordRequest
+	err := ctx.Bind(&body)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot bind request body: %w", err))
+	}
+
+	err = h.validator.Struct(body)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("fail while validate request body: %w", err))
+	}
+
+	err = h.service.UpdateRecords(ctx.Request().Context(), body)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	ctx.Response().Header().Set(constant.HeaderKeyHtmxRedirect, "/")
+
+	return ctx.NoContent(http.StatusOK)
 }

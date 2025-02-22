@@ -36,7 +36,7 @@ templ getRecordTableDateSelector(data model.DateResult) {
             <a href="/records/new" class="btn btn-success bg-gradient">Add New Record</a>
         </div>
         <div class="col-auto">
-            <a class="btn btn-warning bg-gradient" href="/records/edit">Edit Record</a>
+            <a class="btn btn-warning bg-gradient" href={templ.URL("/records/edit?date=" + data.CurrentDate.Format(time.DateOnly))}>Edit Record</a>
         </div>
         <div class="col-auto">
             <p class="btn btn-danger bg-gradient">Delete Record</p>

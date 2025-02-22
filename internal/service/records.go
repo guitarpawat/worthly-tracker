@@ -71,6 +71,50 @@ func (r *Records) GetByDate(ctx context.Context, d date.Date) (model.GetRecordTa
 	}, nil
 }
 
+func (r *Records) GetByDateForEdit(ctx context.Context, d date.Date) (model.EditRecordTableView, error) {
+	var err error
+	if date.Zero == d {
+		d, err = r.repo.GetLatestDate(ctx)
+		if err != nil {
+			return model.EditRecordTableView{}, fmt.Errorf("cannot get latest date: %w", err)
+		}
+	}
+
+	records, err := r.repo.FindByDate(ctx, d)
+	if err != nil {
+		return model.EditRecordTableView{}, fmt.Errorf("cannot get records: %w", err)
+	}
+
+	var assetTypes []model.RecordTableViewAssetType
+	for idx, record := range records {
+		if idx == 0 || assetTypes[len(assetTypes)-1].Id != record.Asset.AssetType.Id {
+			assetTypes = append(assetTypes, model.RecordTableViewAssetType{
+				Id:      record.Asset.AssetType.Id,
+				Name:    record.Asset.AssetType.Name,
+				Records: make([]model.RecordTableViewData, 0),
+			})
+		}
+		assetTypes[len(assetTypes)-1].Records = append(assetTypes[len(assetTypes)-1].Records, model.RecordTableViewData{
+			Id:               record.Id,
+			AssetId:          record.AssetId,
+			Name:             record.Asset.Name,
+			Broker:           record.Asset.Broker,
+			BoughtValue:      record.BoughtValue,
+			CurrentValue:     record.CurrentValue,
+			RealizedValue:    record.RealizedValue,
+			DefaultIncrement: record.Asset.DefaultIncrement,
+			IsCash:           record.Asset.AssetType.IsCash,
+			Note:             record.Note.String,
+		})
+	}
+
+	return model.EditRecordTableView{
+		AssetTypes: assetTypes,
+		Date:       d,
+		Action:     constant.EditActionUpdate,
+	}, nil
+}
+
 func (r *Records) GetDraft(ctx context.Context) (model.EditRecordTableView, error) {
 	records, err := r.repo.FindForDraft(ctx)
 	if err != nil {
@@ -156,8 +200,8 @@ func (r *Records) CreateRecords(ctx context.Context, req model.CreateRecordReque
 	return nil
 }
 
-func (r *Records) UpdateRecords(ctx context.Context, req model.CreateRecordRequest) error {
-	records := lo.Map(req.Records, func(record model.CreateRecordRequestRecord, _ int) model.Record {
+func (r *Records) UpdateRecords(ctx context.Context, req model.UpdateRecordRequest) error {
+	records := lo.Map(req.Records, func(record model.UpdateRecordRequestRecord, _ int) model.Record {
 		var note sql.NullString
 		if record.Note == "" {
 			note = sql.NullString{Valid: false}
@@ -168,8 +212,8 @@ func (r *Records) UpdateRecords(ctx context.Context, req model.CreateRecordReque
 			}
 		}
 
-		assetId, _ := strconv.Atoi(record.AssetId)  // Already validate request
-		recordId, _ := strconv.Atoi(record.AssetId) // Already validate request
+		recordId, _ := strconv.Atoi(record.Id)     // Already validate request
+		assetId, _ := strconv.Atoi(record.AssetId) // Already validate request
 		return model.Record{
 			Id:            recordId,
 			AssetId:       assetId,

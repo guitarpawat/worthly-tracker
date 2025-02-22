@@ -17,3 +17,17 @@ type CreateRecordRequestRecord struct {
 	RealizedValue decimal.Decimal
 	Note          string
 }
+
+type UpdateRecordRequest struct {
+	Date    date.Date                   `validate:"required"`
+	Records []UpdateRecordRequestRecord `validate:"required"`
+}
+
+type UpdateRecordRequestRecord struct {
+	Id            string `validate:"number"`
+	AssetId       string `validate:"number"`
+	BoughtValue   decimal.Decimal
+	CurrentValue  decimal.Decimal
+	RealizedValue decimal.Decimal
+	Note          string
+}

@@ -7,6 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 	"strconv"
 	"fmt"
+	"github.com/guitarpawat/worthly-tracker/internal/constant"
 )
 
 templ EditRecordTable(data model.EditRecordTableView) {
@@ -53,7 +54,11 @@ templ EditRecordTable(data model.EditRecordTableView) {
                 }
             </table>
             <div class="text-center">
-                <p class="btn btn-success btn-lg" id="save-btn" hx-post="/records">&nbsp;Save&nbsp;</p>
+                if data.Action == constant.EditActionNew {
+                    <p class="btn btn-success btn-lg" id="save-btn" hx-post="/records">&nbsp;Save&nbsp;</p>
+                } else if data.Action == constant.EditActionUpdate {
+                    <p class="btn btn-success btn-lg" id="save-btn" hx-put="/records">&nbsp;Save&nbsp;</p>
+                }
             </div>
         </div>
     </div>

@@ -58,9 +58,9 @@ func (r *Router) registerMiddleWare() {
 		LogError:  true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			if v.Error != nil {
-				logs.Log().Errorf("REQUEST: uri: %v, error: %v\n", v.URI, v.Error)
+				logs.Log().Errorf("REQUEST: uri: %v %v, error: %v\n", c.Request().Method, v.URI, v.Error)
 			} else {
-				logs.Log().Infof("REQUEST: uri: %v, status: %v\n", v.URI, v.Status)
+				logs.Log().Infof("REQUEST: uri: %v %v, status: %v\n", c.Request().Method, v.URI, v.Status)
 			}
 			return nil
 		},

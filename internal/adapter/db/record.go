@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"github.com/guitarpawat/worthly-tracker/internal/model"
-	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/pkg/errors"
 	"github.com/rickb777/date/v2"
 	"gorm.io/gorm"
@@ -47,7 +46,6 @@ func (r *RecordsRepository) FindForDraft(ctx context.Context) (res []model.Recor
 }
 
 func (r *RecordsRepository) Upsert(ctx context.Context, record model.Record) error {
-	logs.Log().Infof("upsert record: %+v", record)
 	return r.db.WithContext(ctx).Save(&record).Error
 }
 
