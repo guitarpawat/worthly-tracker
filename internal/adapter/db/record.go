@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rickb777/date/v2"
 	"gorm.io/gorm"
+	"slices"
 )
 
 type RecordsRepository struct {
@@ -83,7 +84,7 @@ func (r *RecordsRepository) FindPastAndFutureDate(ctx context.Context, current d
 
 	var past []date.Date
 
-	err = r.db.WithContext(ctx).Table("records").Order("Date").Limit(12).Where("Date < ?", current).Distinct().Pluck("Date", &past).Error
+	err = r.db.WithContext(ctx).Table("records").Order("Date DESC").Limit(12).Where("Date < ?", current).Distinct().Pluck("Date", &past).Error
 	if err != nil {
 		return model.DateResult{}, err
 	}
@@ -93,6 +94,8 @@ func (r *RecordsRepository) FindPastAndFutureDate(ctx context.Context, current d
 	if err != nil {
 		return model.DateResult{}, err
 	}
+
+	slices.Reverse(past)
 
 	return model.DateResult{
 		PastDate:    past,
