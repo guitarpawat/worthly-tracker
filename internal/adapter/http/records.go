@@ -44,9 +44,9 @@ func (h *RecordHandler) GetRecordsByDate(ctx echo.Context) error {
 	}
 
 	if ctx.Request().Header.Get(constant.HeaderKeyHtmxRequest) == constant.HeaderValueHtmxRequest {
-		return render(ctx, http.StatusOK, component.GetRecordTable(resp))
+		return htmxRender(ctx, http.StatusOK, component.GetRecordTable(resp))
 	} else {
-		return render(ctx, http.StatusOK, page.GetRecord(resp))
+		return htmxRender(ctx, http.StatusOK, page.GetRecord(resp))
 	}
 }
 
@@ -56,7 +56,7 @@ func (h *RecordHandler) GetRecordsForDraft(ctx echo.Context) error {
 		return err
 	}
 
-	return render(ctx, http.StatusOK, page.EditRecord(draft))
+	return htmxRender(ctx, http.StatusOK, page.EditRecord(draft))
 }
 
 func (h *RecordHandler) GetRecordsForEdit(ctx echo.Context) error {
@@ -77,7 +77,7 @@ func (h *RecordHandler) GetRecordsForEdit(ctx echo.Context) error {
 		return err
 	}
 
-	return render(ctx, http.StatusOK, page.EditRecord(draft))
+	return htmxRender(ctx, http.StatusOK, page.EditRecord(draft))
 }
 
 func (h *RecordHandler) CreateRecord(ctx echo.Context) error {
@@ -97,9 +97,7 @@ func (h *RecordHandler) CreateRecord(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	ctx.Response().Header().Set(constant.HeaderKeyHtmxRedirect, "/")
-
-	return ctx.NoContent(http.StatusOK)
+	return htmxRedirect(ctx, "/")
 }
 
 func (h *RecordHandler) UpdateRecord(ctx echo.Context) error {
@@ -119,9 +117,7 @@ func (h *RecordHandler) UpdateRecord(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	ctx.Response().Header().Set(constant.HeaderKeyHtmxRedirect, "/")
-
-	return ctx.NoContent(http.StatusOK)
+	return htmxRedirect(ctx, "/")
 }
 
 func (h *RecordHandler) DeleteRecord(ctx echo.Context) error {
@@ -142,7 +138,5 @@ func (h *RecordHandler) DeleteRecord(ctx echo.Context) error {
 		return err
 	}
 
-	ctx.Response().Header().Set(constant.HeaderKeyHtmxRedirect, "/")
-
-	return ctx.NoContent(http.StatusOK)
+	return htmxRedirect(ctx, "/")
 }

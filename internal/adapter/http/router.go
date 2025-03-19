@@ -92,13 +92,13 @@ func (r *Router) registerMiddleWare() {
 		if c.Request().Header.Get(constant.HeaderKeyHtmxRequest) == constant.HeaderValueHtmxRequest {
 			c.Response().Header().Set(constant.HeaderKeyHtmxRetarget, "#page-header")
 			c.Response().Header().Set(constant.HeaderKeyHtmxReswap, "afterend")
-			err = render(c, finalHttpCode, component.Error(finalHttpCode, true, finalErr))
+			err = htmxRender(c, finalHttpCode, component.Error(finalHttpCode, true, finalErr))
 		} else {
-			err = render(c, finalHttpCode, page.Error(finalHttpCode, finalErr))
+			err = htmxRender(c, finalHttpCode, page.Error(finalHttpCode, finalErr))
 		}
 
 		if err != nil {
-			logs.Log().Errorf("cannot render error page: error: %v", err)
+			logs.Log().Errorf("cannot htmxRender error page: error: %v", err)
 		}
 	}
 }
@@ -117,7 +117,7 @@ func (r *Router) registerRecordsRoutes() {
 	r.e.DELETE("/records", r.recordsHandler.DeleteRecord)
 }
 
-func render(ctx echo.Context, status int, t templ.Component) error {
+func htmxRender(ctx echo.Context, status int, t templ.Component) error {
 	buf := templ.GetBuffer()
 	defer templ.ReleaseBuffer(buf)
 
@@ -126,4 +126,9 @@ func render(ctx echo.Context, status int, t templ.Component) error {
 	}
 
 	return ctx.HTML(status, buf.String())
+}
+
+func htmxRedirect(ctx echo.Context, path string) error {
+	ctx.Response().Header().Set(constant.HeaderKeyHtmxRedirect, path)
+	return ctx.NoContent(http.StatusOK)
 }
