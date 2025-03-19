@@ -114,6 +114,7 @@ func (r *Router) registerRecordsRoutes() {
 	r.e.GET("/records/edit", r.recordsHandler.GetRecordsForEdit)
 	r.e.POST("/records", r.recordsHandler.CreateRecord)
 	r.e.PUT("/records", r.recordsHandler.UpdateRecord)
+	r.e.DELETE("/records", r.recordsHandler.DeleteRecord)
 }
 
 func render(ctx echo.Context, status int, t templ.Component) error {

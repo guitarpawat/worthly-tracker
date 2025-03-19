@@ -123,3 +123,26 @@ func (h *RecordHandler) UpdateRecord(ctx echo.Context) error {
 
 	return ctx.NoContent(http.StatusOK)
 }
+
+func (h *RecordHandler) DeleteRecord(ctx echo.Context) error {
+	var d date.Date
+	var err error
+	dateParam := ctx.QueryParam("date")
+	if dateParam == "" {
+		d = date.Zero
+	} else {
+		d, err = date.Parse(time.DateOnly, dateParam)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot parse input date: %w", err))
+		}
+	}
+
+	err = h.service.DeleteRecords(ctx.Request().Context(), d)
+	if err != nil {
+		return err
+	}
+
+	ctx.Response().Header().Set(constant.HeaderKeyHtmxRedirect, "/")
+
+	return ctx.NoContent(http.StatusOK)
+}

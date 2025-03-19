@@ -54,7 +54,7 @@ func (r *RecordsRepository) Delete(ctx context.Context, id int) error {
 }
 
 func (r *RecordsRepository) DeleteByDate(ctx context.Context, date date.Date) error {
-	return r.db.WithContext(ctx).Delete(&model.Record{Date: date}).Error
+	return r.db.WithContext(ctx).Where("Date = ?", date).Delete(new(model.Record)).Error
 }
 
 func (r *RecordsRepository) GetLatestDate(ctx context.Context) (res date.Date, err error) {

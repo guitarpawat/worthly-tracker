@@ -242,3 +242,7 @@ func (r *Records) UpdateRecords(ctx context.Context, req model.UpdateRecordReque
 
 	return nil
 }
+
+func (r *Records) DeleteRecords(ctx context.Context, d date.Date) error {
+	return r.repo.DeleteByDate(ctx, d)
+}

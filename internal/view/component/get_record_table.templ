@@ -39,7 +39,9 @@ templ getRecordTableDateSelector(data model.DateResult) {
             <a class="btn btn-warning bg-gradient" href={templ.URL("/records/edit?date=" + data.CurrentDate.Format(time.DateOnly))}>Edit Record</a>
         </div>
         <div class="col-auto">
-            <p class="btn btn-danger bg-gradient">Delete Record</p>
+            <p class="btn btn-danger bg-gradient"
+            hx-delete={"/records?date=" + data.CurrentDate.Format(time.DateOnly)}
+            hx-confirm={"Are you sure to delete all records in " + data.CurrentDate.Format(time.DateOnly)}>Delete Record</p>
         </div>
         <div class="col-auto ms-auto">
             if len(data.PastDate) == 0 {
