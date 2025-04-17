@@ -1,17 +1,15 @@
 package db
 
-import "gorm.io/gorm"
-
 type Repositories struct {
 	Asset     *AssetsRepository
 	AssetType *AssetTypesRepository
 	Record    *RecordsRepository
 }
 
-func NewRepositories(db *gorm.DB) *Repositories {
+func NewRepositories(conn Conn) *Repositories {
 	return &Repositories{
-		Asset:     &AssetsRepository{db: db},
-		AssetType: &AssetTypesRepository{db: db},
-		Record:    &RecordsRepository{db: db},
+		Asset:     NewAssetsRepository(conn),
+		AssetType: NewAssetTypesRepository(conn),
+		Record:    NewRecordsRepository(conn),
 	}
 }

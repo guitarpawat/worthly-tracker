@@ -1,7 +1,7 @@
 package component
 
 import (
-    "github.com/guitarpawat/worthly-tracker/internal/model"
+    "github.com/guitarpawat/worthly-tracker/internal/view"
     "github.com/guitarpawat/worthly-tracker/utility/format"
 	"time"
 	"github.com/shopspring/decimal"
@@ -10,7 +10,7 @@ import (
 	"github.com/guitarpawat/worthly-tracker/internal/constant"
 )
 
-templ EditRecordTable(data model.EditRecordTableView) {
+templ EditRecordTable(data view.EditRecordTable) {
     <script type="module" src="/js/edit_record.js"></script>
 	<div class="container" hx-ext="json-enc-custom" hx-include="this">
         <h2 id="record-action">{string(data.Action)}</h2>
@@ -64,7 +64,7 @@ templ EditRecordTable(data model.EditRecordTableView) {
     </div>
 }
 
-templ editRecordTableRecord(data model.RecordTableViewData, idx int) {
+templ editRecordTableRecord(data view.RecordTableData, idx int) {
 	<tr>
         <th class="text-start fs-6" scope="row">{data.Name}</th>
         <td class="text-start fs-6">{data.Broker}</td>

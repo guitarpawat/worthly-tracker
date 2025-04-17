@@ -1,4 +1,4 @@
-package model
+package view
 
 import (
 	"github.com/guitarpawat/worthly-tracker/internal/constant"
@@ -6,25 +6,31 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type GetRecordTableView struct {
-	AssetTypes []RecordTableViewAssetType
+type GetRecordTable struct {
+	AssetTypes []RecordTableAssetType
 	Dates      DateResult
 }
 
-type EditRecordTableView struct {
-	AssetTypes []RecordTableViewAssetType
+type DateResult struct {
+	PastDate    []date.Date
+	CurrentDate date.Date
+	FutureDate  []date.Date
+}
+
+type EditRecordTable struct {
+	AssetTypes []RecordTableAssetType
 	Date       date.Date
 	Action     constant.EditRecordTableAction
 }
 
-type RecordTableViewAssetType struct {
+type RecordTableAssetType struct {
 	Id      int
 	Name    string
 	IsCash  bool
-	Records []RecordTableViewData
+	Records []RecordTableData
 }
 
-type RecordTableViewData struct {
+type RecordTableData struct {
 	Id               int
 	AssetId          int
 	Name             string

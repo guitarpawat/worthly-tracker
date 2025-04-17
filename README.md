@@ -12,8 +12,7 @@ datasource:
     uri: file:/home/path-to-file/test.sqlite
     autoMigrate: true
 ```
-3. Compile the program with CGO enabled.
-4. Run the program and specified a location to config file as the argument. For example: `main.exe tracker.yaml`
+3. Run the program and specified a location to config file as the argument. For example: `main.exe tracker.yaml`
 
 ## Features
 

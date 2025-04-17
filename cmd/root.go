@@ -32,15 +32,14 @@ func Execute() error {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	ctx := cmd.Context()
-
 	cfg, err := config.Init(cfgFile)
 	if err != nil {
 		return err
 	}
-	logs.Init(cfg.Logger)
 
-	sqlite, err := db.NewSqlite(ctx, cfg.Datasource.Sqlite)
+	log := logs.New(cfg.Logger)
+
+	sqlite, err := db.NewSqlite(cfg.Datasource.Sqlite, log)
 	if err != nil {
 		return err
 	}
@@ -53,21 +52,21 @@ func run(cmd *cobra.Command, args []string) error {
 	// handler
 	recordHandler := http.NewRecordHandler(recordService)
 
-	router := http.NewRouter(http.RouterConfig{Port: cfg.Server.Port}, recordHandler)
+	router := http.NewRouter(http.RouterConfig{Port: cfg.Server.Port}, log, recordHandler)
 
 	go func() {
 		gracefulStop := make(chan os.Signal, 1)
 		signal.Notify(gracefulStop, syscall.SIGTERM, syscall.SIGINT)
 		<-gracefulStop
-		logs.Log().Info("server is shutting down")
+		log.Info("server is shutting down")
 		err := router.Close()
-		logs.Log().Errorf("cannot stop server: %v", err)
+		log.Errorf("cannot stop server: %v", err)
 	}()
 
 	err = router.Start()
 	if errors.Is(err, net.ErrServerClosed) {
 		return nil
 	}
-	logs.Log().Errorf("server stopped with error: %v", err)
+	log.Errorf("server stopped with error: %v", err)
 	return err
 }

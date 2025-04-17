@@ -15,8 +15,6 @@ var defaultFormat = accounting.Accounting{
 	FormatNegative: "(%s %v)",
 }
 
-var hundred = decimal.NewFromInt(100)
-
 func DecimalToMoney(amount decimal.Decimal) string {
 	return defaultFormat.FormatMoneyDecimal(amount)
 }

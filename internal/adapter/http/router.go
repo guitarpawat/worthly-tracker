@@ -22,14 +22,16 @@ type RouterConfig struct {
 type Router struct {
 	e              *echo.Echo
 	cfg            RouterConfig
+	log            *logs.Logger
 	recordsHandler *RecordHandler
 }
 
-func NewRouter(cfg RouterConfig, recordsHandler *RecordHandler) *Router {
+func NewRouter(cfg RouterConfig, log *logs.Logger, recordsHandler *RecordHandler) *Router {
 	e := echo.New()
 	r := &Router{
 		e:              e,
 		cfg:            cfg,
+		log:            log,
 		recordsHandler: recordsHandler,
 	}
 
@@ -58,9 +60,9 @@ func (r *Router) registerMiddleWare() {
 		LogError:  true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			if v.Error != nil {
-				logs.Log().Errorf("REQUEST: uri: %v %v, error: %v\n", c.Request().Method, v.URI, v.Error)
+				r.log.Errorf("REQUEST: uri: %v %v, error: %v\n", c.Request().Method, v.URI, v.Error)
 			} else {
-				logs.Log().Infof("REQUEST: uri: %v %v, status: %v\n", c.Request().Method, v.URI, v.Status)
+				r.log.Infof("REQUEST: uri: %v %v, status: %v\n", c.Request().Method, v.URI, v.Status)
 			}
 			return nil
 		},
@@ -68,7 +70,7 @@ func (r *Router) registerMiddleWare() {
 
 	r.e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		LogErrorFunc: func(c echo.Context, err error, stack []byte) error {
-			logs.Log().Errorf("RECOVER: error: %v\nStack: %s", err, string(stack))
+			r.log.Errorf("RECOVER: error: %v\nStack: %s", err, string(stack))
 			return err
 		},
 	}))
@@ -98,7 +100,7 @@ func (r *Router) registerMiddleWare() {
 		}
 
 		if err != nil {
-			logs.Log().Errorf("cannot htmxRender error page: error: %v", err)
+			r.log.Errorf("cannot htmxRender error page: error: %v", err)
 		}
 	}
 }

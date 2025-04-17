@@ -1,9 +1,9 @@
 package page
 
-import "github.com/guitarpawat/worthly-tracker/internal/model"
+import "github.com/guitarpawat/worthly-tracker/internal/view"
 import "github.com/guitarpawat/worthly-tracker/internal/view/component"
 
-templ EditRecord(data model.EditRecordTableView) {
+templ EditRecord(data view.EditRecordTable) {
     <!DOCTYPE html>
     <html>
         @getPageHead("Worthly Tracker: " + string(data.Action))

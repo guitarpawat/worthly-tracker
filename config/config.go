@@ -59,6 +59,7 @@ func Init(filePath string) (Config, error) {
 			Sqlite: &db.SqliteConfig{
 				Uri:         v.GetString("datasource.sqlite.uri"),
 				AutoMigrate: v.GetBool("datasource.sqlite.autoMigrate"),
+				Cache:       v.GetBool("datasource.sqlite.cache"),
 			},
 		},
 		Logger: logs.Config{

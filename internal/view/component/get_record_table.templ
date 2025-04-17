@@ -1,11 +1,11 @@
 package component
 
-import "github.com/guitarpawat/worthly-tracker/internal/model"
+import "github.com/guitarpawat/worthly-tracker/internal/view"
 import "github.com/guitarpawat/worthly-tracker/utility/format"
 import "github.com/shopspring/decimal"
 import "time"
 
-templ GetRecordTable(data model.GetRecordTableView) {
+templ GetRecordTable(data view.GetRecordTable) {
     <div class="container" id="get-record-table">
         @getRecordTableDateSelector(data.Dates)
         <table class="table table-bordered table-hover text-nowrap">
@@ -30,7 +30,7 @@ templ GetRecordTable(data model.GetRecordTableView) {
     </div>
 }
 
-templ getRecordTableDateSelector(data model.DateResult) {
+templ getRecordTableDateSelector(data view.DateResult) {
     <div class="row">
         <div class="col-auto">
             <a href="/records/new" class="btn btn-success bg-gradient">Add New Record</a>
@@ -80,7 +80,7 @@ templ getRecordTableDateSelector(data model.DateResult) {
     </div>
 }
 
-templ getRecordTableAssetType(data model.RecordTableViewAssetType) {
+templ getRecordTableAssetType(data view.RecordTableAssetType) {
     <tr class="table-light">
         <th class="text-center border-end-0" colspan="8" scope="row">{data.Name}</th>
         <td class="text-start border-start-0"></td>
@@ -90,7 +90,7 @@ templ getRecordTableAssetType(data model.RecordTableViewAssetType) {
     }
 }
 
-templ GetRecordTableRow(data model.RecordTableViewData) {
+templ GetRecordTableRow(data view.RecordTableData) {
     <tr>
         <th class="text-start" scope="row">{data.Name}</th>
         if data.IsCash {
@@ -166,7 +166,7 @@ func getProfitPercent(bought, current decimal.Decimal) decimal.Decimal {
     return getProfit(bought, current).Div(bought).Mul(hundred)
 }
 
-func calculateTableSummary(data model.GetRecordTableView) GetRecordTableSummaryModel {
+func calculateTableSummary(data view.GetRecordTable) GetRecordTableSummaryModel {
     investmentBoughtValue := decimal.Zero
     investmentCurrentValue := decimal.Zero
     investmentRealizedValue := decimal.Zero
