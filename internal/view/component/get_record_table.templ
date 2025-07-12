@@ -192,5 +192,8 @@ func calculateTableSummary(data view.GetRecordTable) GetRecordTableSummaryModel 
 }
 
 func getCashPercentToNetWorthPercent(investment, cash decimal.Decimal) decimal.Decimal {
+    if cash.IsZero() {
+        return decimal.Zero
+    }
     return cash.Div(investment.Add(cash)).Mul(hundred)
 }

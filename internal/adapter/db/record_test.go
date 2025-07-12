@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/guitarpawat/worthly-tracker/internal/model"
+	"github.com/guitarpawat/worthly-tracker/internal/ports"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/rickb777/date/v2"
 	"github.com/shopspring/decimal"
@@ -16,7 +18,7 @@ func TestRecordSuite(t *testing.T) {
 
 type RecordSuite struct {
 	suite.Suite
-	conn Conn
+	conn ports.Conn
 	tx   tx
 	repo *RecordsRepository
 }
@@ -48,7 +50,7 @@ func (s *RecordSuite) TestGetDate_NoRecord() {
 	actual, err := s.repo.GetDate(now)
 	s.Require().NoError(err)
 
-	expect := &DateList{
+	expect := &model.DateList{
 		Current: now,
 		Prev:    make([]date.Date, 0, 12),
 		Next:    make([]date.Date, 0, 12),
@@ -157,7 +159,7 @@ func (s *RecordSuite) TestGetLatestDate_WithRecord() {
 
 func (s *RecordSuite) TestUpsertRecord_Insert() {
 	s.Require().NoError(s.mockRecords())
-	record := AssetRecord{
+	record := model.AssetRecord{
 		Id:               sql.NullInt64{Valid: false},
 		AssetId:          2,
 		Name:             "TFFIF",
@@ -179,7 +181,7 @@ func (s *RecordSuite) TestUpsertRecord_Insert() {
 
 func (s *RecordSuite) TestUpsertRecord_Update() {
 	s.Require().NoError(s.mockRecords())
-	record := AssetRecord{
+	record := model.AssetRecord{
 		Id:               sql.NullInt64{Int64: 1, Valid: true},
 		AssetId:          2,
 		Name:             "TFFIF",
@@ -239,13 +241,13 @@ func (s *RecordSuite) TestGetRecordByDate_Found() {
 	actual, err := s.repo.GetRecordByDate(date.MustParseISO("2023-01-03"))
 	s.Require().NoError(err)
 
-	expect := []AssetTypeRecord{
+	expect := []model.AssetTypeRecord{
 		{
 			Id:          sql.NullInt64{Int64: 2, Valid: true},
 			Name:        "MF",
 			IsCash:      false,
 			IsLiability: false,
-			Assets: []AssetRecord{
+			Assets: []model.AssetRecord{
 				{
 					Id:               sql.NullInt64{Int64: 64, Valid: true},
 					AssetId:          4,
@@ -275,7 +277,7 @@ func (s *RecordSuite) TestGetRecordByDate_Found() {
 			Name:        "Stocks",
 			IsCash:      true,
 			IsLiability: true,
-			Assets: []AssetRecord{
+			Assets: []model.AssetRecord{
 				{
 					Id:               sql.NullInt64{Int64: 5, Valid: true},
 					AssetId:          1,
@@ -371,13 +373,13 @@ func (s *RecordSuite) TestGetRecordDraft_EmptyRecord() {
 	actual, err := s.repo.GetRecordDraft()
 	s.Require().NoError(err)
 
-	expect := []AssetTypeRecord{
+	expect := []model.AssetTypeRecord{
 		{
 			Id:          sql.NullInt64{Int64: 1, Valid: true},
 			Name:        "Stocks",
 			IsCash:      true,
 			IsLiability: true,
-			Assets: []AssetRecord{
+			Assets: []model.AssetRecord{
 				{
 					Id:               sql.NullInt64{Valid: false},
 					AssetId:          1,
@@ -441,13 +443,13 @@ func (s *RecordSuite) TestGetRecordDraft_PartialHitRecord() {
 	actual, err := s.repo.GetRecordDraft()
 	s.Require().NoError(err)
 
-	expect := []AssetTypeRecord{
+	expect := []model.AssetTypeRecord{
 		{
 			Id:          sql.NullInt64{Int64: 1, Valid: true},
 			Name:        "Stocks",
 			IsCash:      true,
 			IsLiability: true,
-			Assets: []AssetRecord{
+			Assets: []model.AssetRecord{
 				{
 					Id:               sql.NullInt64{Valid: false},
 					AssetId:          1,

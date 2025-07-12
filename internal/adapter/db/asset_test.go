@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/guitarpawat/worthly-tracker/internal/model"
+	"github.com/guitarpawat/worthly-tracker/internal/ports"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
@@ -16,7 +18,7 @@ func TestAssetSuite(t *testing.T) {
 
 type AssetSuite struct {
 	suite.Suite
-	conn Conn
+	conn ports.Conn
 	tx   tx
 	repo *AssetsRepository
 }
@@ -163,7 +165,7 @@ func (s *AssetSuite) TestGetNames_ByAll() {
 
 func (s *AssetSuite) TestUpsert_Insert() {
 	s.Require().NoError(s.mockAssets())
-	var assetDetail = AssetDetail{
+	var assetDetail = model.AssetDetail{
 		Id:               sql.NullInt64{Valid: false},
 		Name:             "Monika",
 		Broker:           "ddlc",
@@ -191,7 +193,7 @@ func (s *AssetSuite) TestUpsert_Insert() {
 
 func (s *AssetSuite) TestUpsert_Update() {
 	s.Require().NoError(s.mockAssets())
-	var assetDetail = AssetDetail{
+	var assetDetail = model.AssetDetail{
 		Id:               sql.NullInt64{Int64: 3, Valid: true},
 		Name:             "Monika",
 		Broker:           "ddlc",
@@ -232,7 +234,7 @@ func (s *AssetSuite) TestUpsert_Delete() {
 
 func (s *AssetSuite) TestUpdateSequence() {
 	s.Require().NoError(s.mockAssets())
-	var sequence = AssetSequenceDetail{
+	var sequence = model.AssetSequenceDetail{
 		Id:       3,
 		Sequence: 99,
 	}

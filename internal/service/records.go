@@ -1,11 +1,11 @@
 package service
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"github.com/guitarpawat/worthly-tracker/internal/adapter/db"
 	"github.com/guitarpawat/worthly-tracker/internal/constant"
+	"github.com/guitarpawat/worthly-tracker/internal/model"
+	"github.com/guitarpawat/worthly-tracker/internal/ports"
 	"github.com/guitarpawat/worthly-tracker/internal/view"
 	"github.com/rickb777/date/v2"
 	"github.com/shopspring/decimal"
@@ -13,40 +13,13 @@ import (
 )
 
 type Records struct {
-	repo *db.RecordsRepository
+	repo ports.RecordsRepository
 }
 
-func NewRecords(records *db.RecordsRepository) *Records {
+func NewRecords(records ports.RecordsRepository) *Records {
 	return &Records{
 		repo: records,
 	}
-}
-
-type CreateRecordRequest struct {
-	Date    date.Date                   `validate:"required"`
-	Records []CreateRecordRequestRecord `validate:"required"`
-}
-
-type CreateRecordRequestRecord struct {
-	AssetId       string `validate:"number"`
-	BoughtValue   decimal.Decimal
-	CurrentValue  decimal.Decimal
-	RealizedValue decimal.Decimal
-	Note          string
-}
-
-type UpdateRecordRequest struct {
-	Date    date.Date                   `validate:"required"`
-	Records []UpdateRecordRequestRecord `validate:"required"`
-}
-
-type UpdateRecordRequestRecord struct {
-	Id            string `validate:"number"`
-	AssetId       string `validate:"number"`
-	BoughtValue   decimal.Decimal
-	CurrentValue  decimal.Decimal
-	RealizedValue decimal.Decimal
-	Note          string
 }
 
 func (r *Records) GetByDate(d date.Date) (view.GetRecordTable, error) {
@@ -185,17 +158,17 @@ func (r *Records) GetDraft() (view.EditRecordTable, error) {
 	}, nil
 }
 
-func (r *Records) CreateRecords(req CreateRecordRequest) error {
+func (r *Records) CreateRecords(req model.CreateRecordRequest) error {
 	repo, tx, err := r.repo.BeginTx()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	var assetRecords []db.AssetRecord
+	var assetRecords []model.AssetRecord
 	for _, record := range req.Records {
 		assetId, _ := strconv.Atoi(record.AssetId) // Already validate request
-		assetRecords = append(assetRecords, db.AssetRecord{
+		assetRecords = append(assetRecords, model.AssetRecord{
 			Id:            sql.NullInt64{Valid: false},
 			AssetId:       assetId,
 			BoughtValue:   decimal.NewNullDecimal(record.BoughtValue),
@@ -220,18 +193,18 @@ func (r *Records) CreateRecords(req CreateRecordRequest) error {
 	return nil
 }
 
-func (r *Records) UpdateRecords(ctx context.Context, req UpdateRecordRequest) error {
+func (r *Records) UpdateRecords(req model.UpdateRecordRequest) error {
 	repo, tx, err := r.repo.BeginTx()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	var assetRecords []db.AssetRecord
+	var assetRecords []model.AssetRecord
 	for _, record := range req.Records {
 		recordId, _ := strconv.Atoi(record.Id)     // Already validate request
 		assetId, _ := strconv.Atoi(record.AssetId) // Already validate request
-		assetRecords = append(assetRecords, db.AssetRecord{
+		assetRecords = append(assetRecords, model.AssetRecord{
 			Id:            sql.NullInt64{Int64: int64(recordId), Valid: true},
 			AssetId:       assetId,
 			BoughtValue:   decimal.NewNullDecimal(record.BoughtValue),

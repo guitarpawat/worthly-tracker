@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/guitarpawat/worthly-tracker/internal/model"
+	"github.com/guitarpawat/worthly-tracker/internal/ports"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/suite"
@@ -15,7 +17,7 @@ func TestAssetTypeSuite(t *testing.T) {
 
 type AssetTypeSuite struct {
 	suite.Suite
-	conn Conn
+	conn ports.Conn
 	tx   tx
 	repo *AssetTypesRepository
 }
@@ -108,7 +110,7 @@ func (s *AssetTypeSuite) TestGetNames_All() {
 
 func (s *AssetTypeSuite) TestUpsert_Insert() {
 	s.Require().NoError(s.mockAssetType())
-	req := AssetTypeDetail{
+	req := model.AssetTypeDetail{
 		Id:          sql.NullInt64{Valid: false},
 		Name:        "Test",
 		IsCash:      false,
@@ -137,7 +139,7 @@ func (s *AssetTypeSuite) TestUpsert_Insert() {
 
 func (s *AssetTypeSuite) TestUpsert_Update() {
 	s.Require().NoError(s.mockAssetType())
-	req := AssetTypeDetail{
+	req := model.AssetTypeDetail{
 		Id:          sql.NullInt64{Int64: 2, Valid: true},
 		Name:        "Test",
 		IsCash:      false,
@@ -172,7 +174,7 @@ func (s *AssetTypeSuite) TestDelete() {
 
 func (s *AssetTypeSuite) TestUpdateSequence() {
 	s.Require().NoError(s.mockAssetType())
-	req := AssetTypeSequenceDetail{
+	req := model.AssetTypeSequenceDetail{
 		Id:       1,
 		Sequence: 99,
 	}

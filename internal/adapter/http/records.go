@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/guitarpawat/worthly-tracker/internal/constant"
-	"github.com/guitarpawat/worthly-tracker/internal/service"
+	"github.com/guitarpawat/worthly-tracker/internal/model"
+	"github.com/guitarpawat/worthly-tracker/internal/ports"
 	"github.com/guitarpawat/worthly-tracker/internal/view/component"
 	"github.com/guitarpawat/worthly-tracker/internal/view/page"
 	"github.com/labstack/echo/v4"
@@ -14,11 +15,11 @@ import (
 )
 
 type RecordHandler struct {
-	service   *service.Records
+	service   ports.RecordsService
 	validator *validator.Validate
 }
 
-func NewRecordHandler(service *service.Records) *RecordHandler {
+func NewRecordHandler(service ports.RecordsService) *RecordHandler {
 	return &RecordHandler{
 		service:   service,
 		validator: validator.New(validator.WithRequiredStructEnabled()),
@@ -80,7 +81,7 @@ func (h *RecordHandler) GetRecordsForEdit(ctx echo.Context) error {
 }
 
 func (h *RecordHandler) CreateRecord(ctx echo.Context) error {
-	var body service.CreateRecordRequest
+	var body model.CreateRecordRequest
 	err := ctx.Bind(&body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot bind request body: %w", err))
@@ -100,7 +101,7 @@ func (h *RecordHandler) CreateRecord(ctx echo.Context) error {
 }
 
 func (h *RecordHandler) UpdateRecord(ctx echo.Context) error {
-	var body service.UpdateRecordRequest
+	var body model.UpdateRecordRequest
 	err := ctx.Bind(&body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("cannot bind request body: %w", err))
@@ -111,7 +112,7 @@ func (h *RecordHandler) UpdateRecord(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("fail while validate request body: %w", err))
 	}
 
-	err = h.service.UpdateRecords(ctx.Request().Context(), body)
+	err = h.service.UpdateRecords(body)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}

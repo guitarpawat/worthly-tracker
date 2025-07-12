@@ -7,6 +7,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	"github.com/guitarpawat/worthly-tracker/internal/ports"
 	"github.com/guitarpawat/worthly-tracker/resource"
 	"github.com/guitarpawat/worthly-tracker/utility/logs"
 	_ "modernc.org/sqlite"
@@ -18,7 +19,7 @@ type SqliteConfig struct {
 	Cache       bool
 }
 
-func NewSqlite(cfg *SqliteConfig, log *logs.Logger) (Conn, error) {
+func NewSqlite(cfg *SqliteConfig, log *logs.Logger) (ports.Conn, error) {
 	db, err := connectDB(cfg)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func NewSqlite(cfg *SqliteConfig, log *logs.Logger) (Conn, error) {
 	return db, nil
 }
 
-func NewInMemorySqlite(log *logs.Logger) (Conn, error) {
+func NewInMemorySqlite(log *logs.Logger) (ports.Conn, error) {
 	return NewSqlite(&SqliteConfig{
 		Uri:         "file::memory:",
 		Cache:       true,
@@ -40,7 +41,7 @@ func NewInMemorySqlite(log *logs.Logger) (Conn, error) {
 	}, log)
 }
 
-func connectDB(cfg *SqliteConfig) (Conn, error) {
+func connectDB(cfg *SqliteConfig) (ports.Conn, error) {
 	var uri string
 	if cfg.Cache {
 		uri = cfg.Uri + "?_foreign_keys=true&mode=memory&cache=shared"
