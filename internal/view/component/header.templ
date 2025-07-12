@@ -1,0 +1,57 @@
+package component
+
+templ Header(pageName string) {
+    <nav id="page-header" class="navbar navbar-expand-sm navbar-dark bg-secondary navbar-dar mb-3">
+        <div class="container">
+            <a class="navbar-brand" href="/">Worthly Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="navbar-toggler-icon"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar-menu">
+                <ul class="navbar-nav ms-auto mb-2 mb-xs-0">
+                    <li class="nav-item">
+                        <a href="#" onclick="return false;" class={"nav-link", templ.KV("active", getActiveStatus("records", pageName))}>Records</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" onclick="return false;" class={"nav-link", "dropdown-toggle", templ.KV("active", getActiveStatus("reports", pageName))} role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a href="/report_by_date" class="dropdown-item">Report by date</a>
+                                <a href="/report_net_worth" class="dropdown-item">Report net worth</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" onclick="return false;" class={"nav-link", "dropdown-toggle", templ.KV("active", getActiveStatus("settings", pageName))} role="button" data-bs-toggle="dropdown" aria-expanded="false">Settings</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a href="/asset_type_setting" class="dropdown-item">Manage asset types</a>
+                                <a href="/asset_type_sequence" class="dropdown-item">Asset type sequence</a>
+                                <a href="/asset_setting" class="dropdown-item">Manage assets</a>
+                                <a href="/asset_sequence" class="dropdown-item">Asset sequence</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+}
+
+var subPageMap = map[string]string {
+    "getRecord": "records",
+    "editRecord": "records",
+    "reportByDate": "reports",
+    "reportNetWorth": "reports",
+    "assetTypeSetting": "settings",
+    "assetTypeSequence": "settings",
+    "assetSetting": "settings",
+    "assetSequence": "settings",
+}
+
+func getActiveStatus(headerPageName, currentPageName string) bool {
+    if headerPageName == subPageMap[currentPageName] {
+        return true
+    }
+    return false
+}

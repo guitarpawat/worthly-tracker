@@ -1,7 +1,23 @@
-input[disabled] {
-    pointer-events:none
+input[readonly], input[disabled] {
+    pointer-events:none;
+    background-color : #efefef;
+    color: #3e3e3e;
 }
 
 worthly-header * {
     z-index: 100000;
+}
+
+.container{
+    max-width: 1440px;
+}
+
+.navbar {
+    z-index: 9999;
+}
+
+@media (max-width: 1440px) {
+    .container{
+        max-width: 100%;
+    }
 }

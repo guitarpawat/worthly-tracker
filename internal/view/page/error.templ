@@ -1,0 +1,14 @@
+package page
+
+import "github.com/guitarpawat/worthly-tracker/internal/view/component"
+
+templ Error(httpStatus int, err error) {
+    <!DOCTYPE html>
+        <html>
+            @getPageHead("Worthly Tracker: Records")
+            <body>
+            @component.Header("error")
+            @component.Error(httpStatus, false, err)
+            </body>
+        </html>
+}

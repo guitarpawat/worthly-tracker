@@ -1,0 +1,199 @@
+package component
+
+import "github.com/guitarpawat/worthly-tracker/internal/view"
+import "github.com/guitarpawat/worthly-tracker/utility/format"
+import "github.com/shopspring/decimal"
+import "time"
+
+templ GetRecordTable(data view.GetRecordTable) {
+    <div class="container" id="get-record-table">
+        @getRecordTableDateSelector(data.Dates)
+        <table class="table table-bordered table-hover text-nowrap">
+            <thead class="table-secondary table-group-divider sticky-top">
+                <tr>
+                    <th class="text-center" scope="col">Name</th>
+                    <th class="text-center" scope="col">Place</th>
+                    <th class="text-center" scope="col">Bought Value</th>
+                    <th class="text-center" scope="col">Current Value</th>
+                    <th class="text-center" scope="col">Unrealized Value</th>
+                    <th class="text-center" scope="col">UR %</th>
+                    <th class="text-center" scope="col">Realized Value</th>
+                    <th class="text-center" scope="col">Profit %</th>
+                    <th class="text-center" scope="col">Remarks</th>
+                </tr>
+            </thead>
+            for _, assetType := range data.AssetTypes {
+                @getRecordTableAssetType(assetType)
+            }
+            @getRecordTableSummary(calculateTableSummary(data))
+        </table>
+    </div>
+}
+
+templ getRecordTableDateSelector(data view.DateResult) {
+    <div class="row">
+        <div class="col-auto">
+            <a href="/records/new" class="btn btn-success bg-gradient">Add New Record</a>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-warning bg-gradient" href={templ.URL("/records/edit?date=" + data.CurrentDate.Format(time.DateOnly))}>Edit Record</a>
+        </div>
+        <div class="col-auto">
+            <p class="btn btn-danger bg-gradient"
+            hx-delete={"/records?date=" + data.CurrentDate.Format(time.DateOnly)}
+            hx-confirm={"Are you sure to delete all records in " + data.CurrentDate.Format(time.DateOnly)}>Delete Record</p>
+        </div>
+        <div class="col-auto ms-auto">
+            if len(data.PastDate) == 0 {
+                <button class="btn btn-outline-secondary" disabled>&lt; Prev</button>
+            } else {
+                <button class="btn btn-outline-secondary"
+                    hx-get={"/records?date=" + data.PastDate[len(data.PastDate) - 1].Format(time.DateOnly)}
+                    hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">&lt; Prev</button>
+            }
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="date-selector" name="date" hx-get="/records"
+            hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">
+                for _, date := range data.PastDate {
+                    <option value={date.Format(time.DateOnly)}>{date.Format(time.DateOnly)}</option>
+                }
+                <option value=date.Format(time.DateOnly) selected="selected">{data.CurrentDate.Format(time.DateOnly)}</option>
+                for _, date := range data.FutureDate {
+                    <option value={date.Format(time.DateOnly)}>{date.Format(time.DateOnly)}</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            if len(data.FutureDate) == 0 {
+                <button class="btn btn-outline-secondary" disabled>Next &gt;</button>
+            } else {
+                <button class="btn btn-outline-secondary"
+                    hx-get={"/records?date=" + data.FutureDate[0].Format(time.DateOnly)}
+                    hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">Next &gt;</button>
+            }
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-outline-primary bg-gradient" hx-get="/records"
+            hx-target="#get-record-table" hx-swap="outerHTML" hx-push-url="true">Latest</button>
+        </div>
+    </div>
+}
+
+templ getRecordTableAssetType(data view.RecordTableAssetType) {
+    <tr class="table-light">
+        <th class="text-center border-end-0" colspan="8" scope="row">{data.Name}</th>
+        <td class="text-start border-start-0"></td>
+    </tr>
+    for _, record := range data.Records {
+        @GetRecordTableRow(record)
+    }
+}
+
+templ GetRecordTableRow(data view.RecordTableData) {
+    <tr>
+        <th class="text-start" scope="row">{data.Name}</th>
+        if data.IsCash {
+            <td class="text-start">{data.Broker}</td>
+            <td class="text-end"></td>
+            <td class="text-end">{format.DecimalToMoney(data.CurrentValue)}</td>
+            <td class="text-end"></td>
+            <td class="text-end"></td>
+            <td class="text-end"></td>
+            <td class="text-end"></td>
+            <td class="text-start">{data.Note}</td>
+        } else {
+            <td class="text-start">{data.Broker}</td>
+            <td class="text-end">{format.DecimalToMoney(data.BoughtValue)}</td>
+            <td class="text-end">{format.DecimalToMoney(data.CurrentValue)}</td>
+            <td class="text-end">{format.DecimalToMoney(getProfit(data.BoughtValue, data.CurrentValue))}</td>
+            <td class="text-end">{format.Percent(getProfitPercent(data.BoughtValue, data.CurrentValue))}</td>
+            if data.RealizedValue.IsZero() {
+                <td class="text-end"></td>
+            } else {
+                <td class="text-end">{format.DecimalToMoney(data.RealizedValue)}</td>
+            }
+            <td class="text-end">{format.Percent(getProfitPercent(data.BoughtValue, data.CurrentValue.Add(data.RealizedValue)))}</td>
+            <td class="text-start">{data.Note}</td>
+        }
+
+    </tr>
+}
+
+type GetRecordTableSummaryModel struct {
+    InvestmentBoughtValue decimal.Decimal
+    InvestmentCurrentValue decimal.Decimal
+    InvestmentRealizedValue decimal.Decimal
+    CashValue decimal.Decimal
+}
+
+templ getRecordTableSummary(data GetRecordTableSummaryModel) {
+	<tfoot class="table-light table-group-divider sticky-bottom">
+	    <tr>
+	        <th class="text-center" scope="rowgroup" rowspan="2">Total</th>
+	        <th class="text-center" scope="row">Investment</th>
+	        <td class="text-end">{format.DecimalToMoney(data.InvestmentBoughtValue)}</td>
+	        <td class="text-end">{format.DecimalToMoney(data.InvestmentCurrentValue)}</td>
+	        <td class="text-end">{format.DecimalToMoney(getProfit(data.InvestmentBoughtValue, data.InvestmentCurrentValue))}</td>
+	        <td class="text-end">{format.Percent(getProfitPercent(data.InvestmentBoughtValue, data.InvestmentCurrentValue))}</td>
+	        <td class="text-end">{format.DecimalToMoney(data.InvestmentRealizedValue)}</td>
+	        <td class="text-end">{format.Percent(getProfitPercent(data.InvestmentBoughtValue, data.InvestmentCurrentValue.Add(data.InvestmentRealizedValue)))}</td>
+	        <td class="text-start" rowspan="2">Net Worth: {format.DecimalToMoney(data.InvestmentCurrentValue.Add(data.CashValue))}<br/>
+	            Cash/NW: {format.Percent(getCashPercentToNetWorthPercent(data.InvestmentCurrentValue, data.CashValue))}</td>
+        </tr>
+        <tr>
+            <th class="text-center" scope="row">Cash</th>
+            <td class="text-end"></td>
+            <td class="text-end">{format.DecimalToMoney(data.CashValue)}</td>
+            <td class="text-end"></td>
+            <td class="text-end">
+            </td><td class="text-end"></td>
+            <td class="text-end"></td>
+        </tr>
+    </tfoot>
+}
+
+var hundred = decimal.NewFromInt(100)
+
+func getProfit(bought, current decimal.Decimal) decimal.Decimal {
+    return current.Sub(bought)
+}
+
+func getProfitPercent(bought, current decimal.Decimal) decimal.Decimal {
+    if bought.IsZero() {
+        return decimal.Zero
+    }
+    return getProfit(bought, current).Div(bought).Mul(hundred)
+}
+
+func calculateTableSummary(data view.GetRecordTable) GetRecordTableSummaryModel {
+    investmentBoughtValue := decimal.Zero
+    investmentCurrentValue := decimal.Zero
+    investmentRealizedValue := decimal.Zero
+    cashValue := decimal.Zero
+    for _, assetType := range data.AssetTypes {
+        for _, record := range assetType.Records {
+            if record.IsCash {
+                cashValue = cashValue.Add(record.CurrentValue)
+            } else {
+                investmentBoughtValue = investmentBoughtValue.Add(record.BoughtValue)
+                investmentCurrentValue = investmentCurrentValue.Add(record.CurrentValue)
+                investmentRealizedValue = investmentRealizedValue.Add(record.RealizedValue)
+            }
+        }
+    }
+
+    return GetRecordTableSummaryModel{
+        InvestmentBoughtValue: investmentBoughtValue,
+        InvestmentCurrentValue: investmentCurrentValue,
+        InvestmentRealizedValue: investmentRealizedValue,
+        CashValue: cashValue,
+    }
+}
+
+func getCashPercentToNetWorthPercent(investment, cash decimal.Decimal) decimal.Decimal {
+    if cash.IsZero() {
+        return decimal.Zero
+    }
+    return cash.Div(investment.Add(cash)).Mul(hundred)
+}

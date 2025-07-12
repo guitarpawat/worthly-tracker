@@ -5,28 +5,30 @@ The net worth tracker that based on my requirement.
 1. Create sqlite file for database storage.
 2. Create yaml config file as below:
 ```yaml
-datasource:
-  uri: file:C:\Users\path-to-file\tracker.sqlite
 server:
   port: 8080
+datasource:
+  sqlite:
+    uri: file:/home/path-to-file/test.sqlite
+    autoMigrate: true
 ```
-3. Compile the program with CGO enabled.
-4. Run the program and specified a location to config file as the argument. For example: `main.exe tracker.yaml`
+3. Run the program and specified a location to config file as the argument. For example: `main.exe tracker.yaml`
 
 ## Features
 
 ### MVP 1
 - [x] Record date
-- [ ] Manage assets
+- [x] Delete data
+- [x] Bulk Edit data
 - [x] Support for bought value offset
 
 ### MVP 2
-- [ ] Delete data
-- [ ] Edit data
+- [ ] Manage assets
 - [ ] Data summary
+- [ ] Data visualization
 
 ### MVP 3
-- [ ] Data visualization
+- [ ] Add/remove data
 - [ ] Life Goals
 
 ### MVP 4
@@ -34,7 +36,7 @@ server:
 
 ### To Do
 - [ ] Move documentation from Notion to the code (probably using swagger for API and godoc for DTO)
-- [ ] Refactor frontend code
+- [x] Refactor frontend code
 - [ ] Create automated frontend regression tests (probably using selenium or chromedp)
 
 ## Why SQLite?

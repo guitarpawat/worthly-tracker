@@ -22,10 +22,10 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22.2'
+        go-version: '1.24.2'
 
     - name: Download Dependencies
       run: go mod download
 
     - name: Test
-      run: go test -v ./... -tags test
+      run: go test -v ./...

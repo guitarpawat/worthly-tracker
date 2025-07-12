@@ -1,8 +1,5 @@
-dir: "mocks"
-outpkg: "mocks"
-filename: "mock_{{.InterfaceNameSnake}}.go"
-mock-build-tags: "test || unit || integration"
 packages:
-  worthly-tracker/ports:
+  github.com/guitarpawat/worthly-tracker/internal/ports:
     config:
       all: true
+      filename: generated_mocks.go
